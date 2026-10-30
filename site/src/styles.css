@@ -1,0 +1,462 @@
+:root {
+  --text-bar-height: clamp(84px, 12vh, 132px);
+  --gap: 6px;
+  --bg: #f2f2f7;
+  --key-bg: #ffffff;
+  --key-active: #d9d9de;
+  --border: #c7c7cc;
+  --text: #111111;
+  --control-bg: #e5e5ea;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button {
+  appearance: none;
+}
+
+#app {
+  width: 100vw;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: var(--text-bar-height) minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.text-bar {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: stretch;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+#textOutput {
+  position: relative;
+  min-width: 0;
+  padding: max(2px, calc(var(--text-bar-height) * 0.03)) clamp(8px, 2vw, 22px);
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  font-size: min(clamp(44px, 6.8vw, 112px), calc(var(--text-bar-height) * 0.64));
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+  white-space: pre;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+#textOutput::-webkit-scrollbar {
+  display: none;
+}
+
+#textOutput.empty::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  inset-inline-start: calc(clamp(8px, 2vw, 22px) + 0.2em);
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: calc(100% - clamp(8px, 2vw, 22px) * 2 - 0.4em);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8e8e93;
+  font-weight: 500;
+}
+
+#textOutput::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 0.08em;
+  height: 0.82em;
+  margin-left: 0.06em;
+  background: currentColor;
+  animation: text-caret-blink 1s steps(1, end) infinite;
+}
+
+#textOutput .text-value {
+  flex: 0 0 auto;
+  white-space: pre;
+}
+
+@keyframes text-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #textOutput::after {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.top-control {
+  width: clamp(58px, 7.5vw, 96px);
+  min-width: 0;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: var(--control-bg);
+  color: #111111;
+  font-size: clamp(26px, 3.4vw, 44px);
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.top-control.clear {
+  width: clamp(78px, 11vw, 144px);
+  font-size: clamp(13px, 1.7vw, 24px);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.top-control.settings-control {
+  width: clamp(46px, 6.2vw, 78px);
+  font-size: clamp(22px, 3vw, 38px);
+}
+
+.top-control:active {
+  background: #cfcfd4;
+}
+
+#keyboardArea {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 6fr) minmax(0, 1fr);
+  gap: var(--gap);
+  padding: var(--gap);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.bottom-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(64px, 12vw, 120px);
+  gap: var(--gap);
+  min-height: 0;
+}
+.bottom-controls .settings-control {
+  width: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.settings-control svg { width: 32px; height: 32px; pointer-events: none; }
+
+#numbersKeyboard {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+#lettersKeyboard {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: var(--gap);
+  overflow: hidden;
+}
+
+.key {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--key-bg);
+  color: var(--text);
+  font-weight: 750;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.10), 0 2px 5px rgba(0, 0, 0, 0.06);
+  transition: transform 0.04s ease, background-color 0.04s ease;
+}
+
+.key:active,
+.key.pressed {
+  background: var(--key-active);
+  transform: scale(0.975);
+}
+
+.letter-key {
+  font-size: clamp(28px, 5.4vmin, 76px);
+}
+
+.number-key {
+  font-size: clamp(22px, 4vmin, 54px);
+  font-weight: 700;
+}
+
+.space-key {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--control-bg);
+  font-size: clamp(18px, 3vmin, 40px);
+  letter-spacing: 0.08em;
+}
+
+.upper-space-key {
+  min-height: 44px;
+}
+
+.space-key:active,
+.space-key.pressed {
+  background: #c9c9cf;
+  transform: scale(0.985);
+}
+
+.selected,
+[data-action-id].selected {
+  outline: 4px solid #0a84ff;
+  outline-offset: -4px;
+  position: relative;
+  z-index: 2;
+}
+
+#settingsDialog {
+  width: min(560px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+#settingsDialog:not([open]) {
+  display: none;
+}
+
+#settingsDialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 24px);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.2;
+}
+
+.close-settings {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--control-bg);
+  color: #111111;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.settings-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px 18px 20px;
+  overflow: auto;
+}
+
+.settings-body label {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.settings-body select,
+#bridgeCode {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 18px;
+}
+
+#settingsStatus,
+#appStatus {
+  margin: 0;
+  color: #b00020;
+  font-weight: 600;
+}
+
+#appStatus {
+  padding: 4px 12px;
+  background: #fff2f2;
+}
+
+#appStatus:empty {
+  display: none;
+}
+
+.bridge-panel {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.bridge-panel h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.bridge-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.bridge-actions button {
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--control-bg);
+  color: #111111;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#bridgeStatus {
+  min-height: 1.2em;
+  margin: 0;
+  color: #3a3a3c;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --text-bar-height: clamp(72px, 12vh, 104px);
+    --gap: 3px;
+  }
+
+  #textOutput {
+    padding: max(2px, calc(var(--text-bar-height) * 0.03)) 8px;
+    font-size: min(clamp(32px, 9vw, 64px), calc(var(--text-bar-height) * 0.64));
+  }
+
+  .top-control {
+    width: clamp(46px, 12vw, 58px);
+    font-size: clamp(22px, 7vw, 30px);
+    padding: 0 4px;
+  }
+
+  .top-control.clear {
+    width: clamp(64px, 17vw, 82px);
+    font-size: clamp(11px, 3.2vw, 14px);
+  }
+
+  .top-control.settings-control {
+    width: clamp(40px, 10vw, 50px);
+    font-size: clamp(20px, 6vw, 28px);
+  }
+
+  .key {
+    border-radius: 8px;
+  }
+
+  .letter-key {
+    font-size: clamp(22px, 7.2vmin, 50px);
+  }
+
+  .number-key {
+    font-size: clamp(18px, 5.2vmin, 38px);
+  }
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #textOutput {
+    font-size: min(clamp(48px, 7vw, 116px), calc(var(--text-bar-height) * 0.64));
+  }
+
+  .letter-key {
+    font-size: clamp(34px, 6.2vmin, 84px);
+  }
+
+  .number-key {
+    font-size: clamp(24px, 4.7vmin, 62px);
+  }
+}
+
+/* Manual tuning changes the remaining keyboard height. Fit labels to their
+   actual grid cells rather than leaving viewport-sized text clipped by them. */
+@supports (font-size: 1cqh) {
+  #lettersKeyboard, #numbersKeyboard { container-type: size; }
+  #lettersKeyboard .letter-key {
+    font-size: min(11cqw, calc(75cqh / var(--letter-rows, 6)), 84px);
+  }
+  #numbersKeyboard .number-key {
+    font-size: min(6cqw, 75cqh, 62px);
+  }
+}
