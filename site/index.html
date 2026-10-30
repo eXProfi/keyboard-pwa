@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -20,395 +20,7 @@
 
   <title></title>
 
-  <style>
-    :root {
-      --text-bar-height: 3.75cm;
-      --gap: 4px;
-      --bg: #f2f2f7;
-      --key-bg: #ffffff;
-      --key-active: #d9d9de;
-      --border: #c7c7cc;
-      --text: #111111;
-      --control-bg: #e5e5ea;
-    }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: var(--bg);
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      overscroll-behavior: none;
-    }
-
-    body {
-      position: fixed;
-      inset: 0;
-    }
-
-    #app {
-      width: 100vw;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding:
-        env(safe-area-inset-top)
-        env(safe-area-inset-right)
-        env(safe-area-inset-bottom)
-        env(safe-area-inset-left);
-    }
-
-    /*
-      Верхняя строка имеет заданную высоту 1,5 см.
-      Здесь отображается введённый текст и находятся служебные кнопки.
-    */
-    .text-bar {
-      height: var(--text-bar-height);
-      min-height: var(--text-bar-height);
-      max-height: var(--text-bar-height);
-
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: stretch;
-
-      background: #ffffff;
-      border-bottom: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    #textOutput {
-      min-width: 0;
-      padding: 0 18px;
-
-      display: flex;
-      align-items: center;
-
-      color: var(--text);
-      font-size: clamp(78px, 2.7cm, 108px);
-      font-weight: 600;
-      line-height: 1;
-      letter-spacing: 0.01em;
-      word-spacing: 0.28em;
-
-      white-space: pre;
-      overflow-x: auto;
-      overflow-y: hidden;
-
-      /*
-        Сохраняем обычные пробелы в выводимом тексте.
-        Это особенно важно для Safari/iPadOS.
-      */
-      white-space: pre;
-      scrollbar-width: none;
-
-      user-select: text;
-      -webkit-user-select: text;
-    }
-
-    #textOutput::-webkit-scrollbar {
-      display: none;
-    }
-
-
-    /*
-      Визуально увеличенный ОБЫЧНЫЙ пробел.
-
-      В currentText по-прежнему хранится стандартный символ U+0020.
-      Здесь мы только увеличиваем его отображаемую ширину, чтобы на
-      крупном шрифте промежуток между словами был хорошо заметен.
-
-      0.75em примерно соответствует комфортному крупному пробелу
-      между словами на iPad.
-    */
-    .visual-space {
-      display: inline-block;
-      width: 0.9em;
-      min-width: 0.9em;
-      height: 1px;
-      vertical-align: baseline;
-    }
-
-
-    #textOutput.empty::before {
-      content: "Текст появится здесь…";
-      color: #8e8e93;
-      font-weight: 500;
-    }
-
-    .top-control {
-      width: max(84px, 8vw);
-      min-width: 84px;
-
-      border: 0;
-      border-left: 1px solid var(--border);
-
-      background: var(--control-bg);
-      color: #111111;
-
-      font: inherit;
-      font-size: clamp(28px, 3vw, 42px);
-      font-weight: 700;
-
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    .top-control:active {
-      background: #cfcfd4;
-    }
-
-    .top-control.clear {
-      width: max(115px, 10vw);
-      font-size: clamp(17px, 1.8vw, 26px);
-      font-weight: 650;
-    }
-
-    /*
-      Вся оставшаяся площадь делится на:
-      1) одну строку цифр;
-      2) шесть строк русских букв.
-
-      Таким образом получается 7 визуальных рядов одинаковой высоты.
-    */
-    #keyboardArea {
-      flex: 1;
-      min-height: 0;
-
-      display: grid;
-      grid-template-rows: repeat(8, minmax(0, 1fr));
-      gap: var(--gap);
-      padding: var(--gap);
-
-      background: var(--bg);
-    }
-
-    /*
-      Цифры занимают первую строку.
-      10 одинаковых по ширине клавиш.
-    */
-    #numbersKeyboard {
-      grid-row: 1;
-
-      display: grid;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: var(--gap);
-
-      min-height: 0;
-    }
-
-    /*
-      Буквы занимают следующие шесть строк.
-      33 буквы располагаются строго по русскому алфавиту.
-
-      Сетка 6 × 6:
-      - первые 30 букв = 5 полных рядов;
-      - последние Э, Ю, Я занимают последнюю строку,
-        каждая растягивается на две колонки.
-    */
-    #lettersKeyboard {
-      grid-row: 2 / 8;
-
-      min-height: 0;
-
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      grid-template-rows: repeat(6, minmax(0, 1fr));
-      gap: var(--gap);
-    }
-
-    .key {
-      min-width: 0;
-      min-height: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 1px solid var(--border);
-      border-radius: 12px;
-
-      background: var(--key-bg);
-      color: var(--text);
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-
-      font-weight: 750;
-      line-height: 1;
-
-      cursor: pointer;
-      touch-action: manipulation;
-
-      box-shadow:
-        0 1px 0 rgba(0, 0, 0, 0.10),
-        0 2px 5px rgba(0, 0, 0, 0.06);
-
-      transition:
-        transform 0.04s ease,
-        background-color 0.04s ease;
-    }
-
-    .key:active,
-    .key.pressed {
-      background: var(--key-active);
-      transform: scale(0.975);
-    }
-
-    /*
-      Буквы крупнее цифр, потому что у буквенных клавиш больше ширина.
-    */
-    .letter-key {
-      font-size: clamp(32px, 5.8vmin, 76px);
-    }
-
-    .number-key {
-      font-size: clamp(26px, 4.4vmin, 58px);
-      font-weight: 700;
-    }
-
-    /*
-      Последние три буквы заполняют всю последнюю строку.
-    */
-    #lettersKeyboard .key:nth-child(31),
-    #lettersKeyboard .key:nth-child(32),
-    #lettersKeyboard .key:nth-child(33) {
-      grid-column: span 2;
-    }
-
-
-    /*
-      Отдельная крупная кнопка ПРОБЕЛ.
-      Она занимает весь последний ряд клавиатуры.
-    */
-    #spaceButton {
-      grid-row: 8;
-      width: 100%;
-      min-width: 0;
-      min-height: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 1px solid var(--border);
-      border-radius: 12px;
-
-      background: var(--control-bg);
-      color: var(--text);
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-
-      font-size: clamp(24px, 3.4vmin, 44px);
-      font-weight: 750;
-      letter-spacing: 0.08em;
-      line-height: 1;
-
-      cursor: pointer;
-      touch-action: manipulation;
-
-      box-shadow:
-        0 1px 0 rgba(0, 0, 0, 0.10),
-        0 2px 5px rgba(0, 0, 0, 0.06);
-
-      transition:
-        transform 0.04s ease,
-        background-color 0.04s ease;
-    }
-
-    #spaceButton:active,
-    #spaceButton.pressed {
-      background: #c9c9cf;
-      transform: scale(0.985);
-    }
-
-
-    /*
-      Последний ряд клавиатуры:
-      точка слева, затем Э Ю Я, запятая справа.
-
-      Ряд занимает всю ширину буквенной клавиатуры
-      и делится на 5 одинаковых крупных клавиш.
-    */
-    .final-letter-row {
-      grid-column: 1 / -1;
-
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-
-      gap: var(--gap);
-      min-width: 0;
-      min-height: 0;
-    }
-
-    @media (max-width: 700px) {
-      :root {
-        --gap: 2px;
-      }
-
-      .key {
-        border-radius: 8px;
-      }
-
-      #textOutput {
-        padding: 0 8px;
-      }
-
-      .top-control {
-        min-width: 58px;
-      }
-
-      .top-control.clear {
-        width: 78px;
-      }
-    }
-
-    /*
-      Для большого iPad в альбомной ориентации немного увеличиваем символы.
-    */
-    @media (orientation: landscape) and (min-width: 900px) {
-      #textOutput {
-        font-size: clamp(82px, 2.75cm, 112px);
-      }
-
-      .letter-key {
-        font-size: clamp(38px, 6.3vmin, 84px);
-      }
-
-      .number-key {
-        font-size: clamp(28px, 4.7vmin, 62px);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./src/styles.css" />
 </head>
 
 <body>
@@ -426,6 +38,7 @@
         id="backspaceButton"
         class="top-control"
         type="button"
+        data-action-id="backspace"
         aria-label="Удалить последний символ"
         title="Удалить последний символ"
       >
@@ -436,6 +49,7 @@
         id="clearButton"
         class="top-control clear"
         type="button"
+        data-action-id="clear"
         aria-label="Очистить весь текст"
         title="Очистить весь текст"
       >
@@ -454,501 +68,81 @@
         aria-label="Цифры"
       ></div>
 
-      <div
-        id="lettersKeyboard"
-        aria-label="Русский алфавит"
-      ></div>
-
       <button
-        id="spaceButton"
+        id="upperSpaceButton"
+        class="key space-key upper-space-key"
         type="button"
+        data-action-id="space:upper"
         aria-label="Пробел"
         title="Пробел"
       >
         ПРОБЕЛ
       </button>
 
+      <div
+        id="lettersKeyboard"
+        aria-label="Русский алфавит"
+      ></div>
+
+      <div class="bottom-controls"><button
+        id="spaceButton"
+        class="key space-key"
+        type="button"
+        data-action-id="space"
+        aria-label="Пробел"
+        title="Пробел"
+      >
+        ПРОБЕЛ
+      </button>
+
+      <button
+        id="settingsButton"
+        class="top-control settings-control"
+        type="button"
+        data-action-id="settings"
+        aria-haspopup="dialog"
+        aria-controls="settingsDialog"
+        aria-label=""
+        title=""
+      ></button>
+</div>
+
     </section>
 
   </main>
 
-  <script>
-    "use strict";
-
-    /*
-      Цифры располагаются отдельной строкой.
-      Используем привычный порядок от 1 до 0.
-    */
-    const NUMBERS = [
-      "1", "2", "3", "4", "5",
-      "6", "7", "8", "9", "0"
-    ];
-
-    /*
-      Русские буквы строго в алфавитной последовательности.
-      Ё находится после Е.
-    */
-    const RUSSIAN_ALPHABET = [
-      "А", "Б", "В", "Г", "Д", "Е",
-      "Ё", "Ж", "З", "И", "Й", "К",
-      "Л", "М", "Н", "О", "П", "Р",
-      "С", "Т", "У", "Ф", "Х", "Ц",
-      "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь",
-      "Э", "Ю", "Я"
-    ];
-
-    const numbersKeyboard =
-      document.getElementById("numbersKeyboard");
-
-    const lettersKeyboard =
-      document.getElementById("lettersKeyboard");
-
-    const textOutput =
-      document.getElementById("textOutput");
-
-    const backspaceButton =
-      document.getElementById("backspaceButton");
-
-    const clearButton =
-      document.getElementById("clearButton");
-
-    const spaceButton =
-      document.getElementById("spaceButton");
-
-    let currentText = "";
-
-    /*
-      Перерисовываем строку текста.
-      После каждого ввода прокручиваем её вправо,
-      чтобы последний символ всегда был виден.
-    */
-    function renderText() {
-      /*
-        В currentText хранятся обычные пробелы U+0020.
-
-        Выводим строку напрямую через textContent.
-        CSS white-space: pre сохраняет каждый пробел,
-        включая несколько пробелов подряд.
-      */
-      textOutput.textContent = currentText;
-
-      textOutput.classList.toggle(
-        "empty",
-        currentText.length === 0
-      );
-
-      requestAnimationFrame(() => {
-        textOutput.scrollLeft =
-          textOutput.scrollWidth;
-      });
-    }
-
-    /*
-      Универсальная функция добавления символа.
-      Используется и для букв, и для цифр.
-    */
-    function appendCharacter(character) {
-      currentText += character;
-      renderText();
-    }
-
-    /*
-      Пробел добавляется двойным касанием
-      по верхней строке текста.
-    */
-    function appendSpace() {
-      /*
-        Каждый тап по ПРОБЕЛ добавляет один настоящий обычный
-        символ U+0020 — как на стандартной клавиатуре.
-
-        Разрешаем несколько пробелов подряд, чтобы было сразу видно,
-        что кнопка действительно срабатывает.
-      */
-      currentText += " ";
-      renderText();
-    }
-
-    /*
-      Удаляем последний Unicode-символ.
-    */
-    function deleteLastCharacter() {
-      if (currentText.length === 0) {
-        return;
-      }
-
-      const characters =
-        Array.from(currentText);
-
-      characters.pop();
-
-      currentText =
-        characters.join("");
-
-      renderText();
-    }
-
-    function clearText() {
-      currentText = "";
-      renderText();
-    }
-
-    /*
-      Создаёт отдельную кнопку клавиатуры.
-      Этот общий генератор позволяет одинаково
-      обрабатывать буквы и цифры.
-    */
-    function createKey(
-      value,
-      className,
-      ariaLabel
-    ) {
-      const button =
-        document.createElement("button");
-
-      button.type = "button";
-
-      button.className =
-        `key ${className}`;
-
-      button.textContent =
-        value;
-
-      button.setAttribute(
-        "aria-label",
-        ariaLabel
-      );
-
-      button.addEventListener(
-        "pointerdown",
-        (event) => {
-          event.preventDefault();
-
-          button.classList.add(
-            "pressed"
-          );
-
-          appendCharacter(
-            value
-          );
-        }
-      );
-
-      const release = () => {
-        button.classList.remove(
-          "pressed"
-        );
-      };
-
-      button.addEventListener(
-        "pointerup",
-        release
-      );
-
-      button.addEventListener(
-        "pointercancel",
-        release
-      );
-
-      button.addEventListener(
-        "pointerleave",
-        release
-      );
-
-      return button;
-    }
-
-    /*
-      Создание цифровой строки.
-    */
-    function buildNumbersKeyboard() {
-      const fragment =
-        document.createDocumentFragment();
-
-      NUMBERS.forEach(
-        (number) => {
-          fragment.appendChild(
-            createKey(
-              number,
-              "number-key",
-              `Цифра ${number}`
-            )
-          );
-        }
-      );
-
-      numbersKeyboard.appendChild(
-        fragment
-      );
-    }
-
-    /*
-      Создание русской алфавитной клавиатуры.
-    */
-    function buildLettersKeyboard() {
-      const fragment =
-        document.createDocumentFragment();
-
-      /*
-        Первые 30 букв:
-        А ... Ь
-
-        Они автоматически занимают первые
-        пять рядов по 6 клавиш.
-      */
-      RUSSIAN_ALPHABET
-        .slice(0, 30)
-        .forEach(
-          (letter) => {
-            fragment.appendChild(
-              createKey(
-                letter,
-                "letter-key",
-                `Буква ${letter}`
-              )
-            );
-          }
-        );
-
-      /*
-        Отдельный последний ряд:
-
-        .   Э   Ю   Я   ,
-
-        Точка и запятая вводятся так же,
-        как обычные символы.
-      */
-      const finalRow =
-        document.createElement("div");
-
-      finalRow.className =
-        "final-letter-row";
-
-      finalRow.appendChild(
-        createKey(
-          ".",
-          "letter-key",
-          "Точка"
-        )
-      );
-
-      ["Э", "Ю", "Я"].forEach(
-        (letter) => {
-          finalRow.appendChild(
-            createKey(
-              letter,
-              "letter-key",
-              `Буква ${letter}`
-            )
-          );
-        }
-      );
-
-      finalRow.appendChild(
-        createKey(
-          ",",
-          "letter-key",
-          "Запятая"
-        )
-      );
-
-      fragment.appendChild(
-        finalRow
-      );
-
-      lettersKeyboard.appendChild(
-        fragment
-      );
-    }
-
-    /*
-      Удаление последнего символа.
-    */
-    backspaceButton.addEventListener(
-      "pointerdown",
-      (event) => {
-        event.preventDefault();
-        deleteLastCharacter();
-      }
-    );
-
-    /*
-      Полная очистка текста.
-    */
-    clearButton.addEventListener(
-      "pointerdown",
-      (event) => {
-        event.preventDefault();
-        clearText();
-      }
-    );
-
-
-    /*
-      Кнопка ПРОБЕЛ.
-
-      Используем обычное событие click — оно стабильно работает
-      на iPad Safari и не зависит от особенностей Pointer Events.
-    */
-    spaceButton.addEventListener(
-      "click",
-      (event) => {
-        event.preventDefault();
-        appendSpace();
-      }
-    );
-
-    /*
-      Двойной тап по верхней строке:
-      добавить пробел.
-    */
-    textOutput.addEventListener(
-      "dblclick",
-      (event) => {
-        event.preventDefault();
-        appendSpace();
-      }
-    );
-
-    /*
-      Дополнительные жесты по строке текста:
-
-      свайп влево  -> удалить символ;
-      свайп вправо -> добавить пробел.
-    */
-    let gestureStartX = null;
-    let gestureStartY = null;
-
-    textOutput.addEventListener(
-      "pointerdown",
-      (event) => {
-        gestureStartX =
-          event.clientX;
-
-        gestureStartY =
-          event.clientY;
-      }
-    );
-
-    textOutput.addEventListener(
-      "pointerup",
-      (event) => {
-        if (
-          gestureStartX === null ||
-          gestureStartY === null
-        ) {
-          return;
-        }
-
-        const deltaX =
-          event.clientX -
-          gestureStartX;
-
-        const deltaY =
-          event.clientY -
-          gestureStartY;
-
-        gestureStartX = null;
-        gestureStartY = null;
-
-        /*
-          Игнорируем небольшое случайное движение пальца.
-        */
-        if (
-          Math.abs(deltaX) < 60 ||
-          Math.abs(deltaX) <=
-          Math.abs(deltaY)
-        ) {
-          return;
-        }
-
-        if (deltaX < 0) {
-          deleteLastCharacter();
-        } else {
-          appendSpace();
-        }
-      }
-    );
-
-    textOutput.addEventListener(
-      "pointercancel",
-      () => {
-        gestureStartX = null;
-        gestureStartY = null;
-      }
-    );
-
-    /*
-      На iPad долгое нажатие не должно открывать
-      системное контекстное меню на клавишах.
-    */
-    document.addEventListener(
-      "contextmenu",
-      (event) => {
-        if (
-          event.target.closest(".key") ||
-          event.target.closest(".top-control") ||
-          event.target.closest("#spaceButton")
-        ) {
-          event.preventDefault();
-        }
-      }
-    );
-
-    /*
-      Предотвращаем случайный zoom по двойному тапу
-      на клавиатуре.
-
-      Для текстовой строки двойной тап специально
-      оставлен доступным, потому что он вводит пробел.
-    */
-    let lastTouchEnd = 0;
-
-    document.addEventListener(
-      "touchend",
-      (event) => {
-        const now =
-          Date.now();
-
-        if (
-          now - lastTouchEnd <= 300 &&
-          !event.target.closest(
-            "#textOutput"
-          )
-        ) {
-          event.preventDefault();
-        }
-
-        lastTouchEnd = now;
-      },
-      {
-        passive: false
-      }
-    );
-
-    /*
-      Инициализация приложения.
-    */
-    buildNumbersKeyboard();
-    buildLettersKeyboard();
-    renderText();
-
-
-    /*
-      Регистрация Service Worker.
-
-      После первого успешного открытия через HTTPS приложение и все
-      локальные файлы будут сохранены в кэш и смогут загружаться офлайн.
-    */
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("./service-worker.js", { scope: "./" })
-          .catch((error) => {
-            console.error("Service Worker registration failed:", error);
-          });
-      });
-    }
-  </script>
-
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <div class="settings-panel">
+      <header class="settings-header">
+        <h2 id="settingsTitle"></h2>
+        <button id="closeSettings" type="button" data-action-id="closeSettings" class="close-settings" aria-label="" title="">×</button>
+      </header>
+      <div class="settings-body">
+        <label id="uiLanguageLabel" for="uiLocale"></label>
+        <select id="uiLocale" data-action-id="uiLocale"></select>
+        <label id="keyboardLayoutLabel" for="keyboardLayoutId"></label>
+        <select id="keyboardLayoutId" data-action-id="keyboardLayoutId"></select>
+        <p id="settingsStatus" role="status" aria-live="polite" hidden></p>
+        <section class="bridge-panel" aria-labelledby="bridgeTitle">
+          <h3 id="bridgeTitle"></h3>
+          <p id="bridgeHelp"></p>
+          <label id="bridgeCodeLabel" for="bridgeCode"></label>
+          <input id="bridgeCode" data-action-id="bridgeCode" type="text" autocomplete="off" spellcheck="false" aria-describedby="bridgeHelp" />
+          <div class="bridge-actions">
+            <button id="bridgeConnect" type="button" data-action-id="bridgeConnect"></button>
+            <button id="bridgeDisconnect" type="button" data-action-id="bridgeDisconnect"></button>
+          </div>
+          <p id="bridgeStatus" role="status" aria-live="polite"></p>
+        </section>
+        <section class="bridge-panel license-panel" aria-labelledby="licenseTitle">
+          <h3 id="licenseTitle"></h3>
+          <p id="licenseNotice"></p>
+          <a id="licenseLink" href="./LICENSE.txt" target="_blank" rel="noopener"></a>
+        </section>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="./src/app.js"></script>
 </body>
 </html>
