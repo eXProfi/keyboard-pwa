@@ -1,159 +1,3 @@
-const STRINGS = {
-  ru: {
-    summary: 'Чувствительность',
-    headLabel: 'Поворот головы',
-    headHelp: 'Меньше значение — меньше нужно поворачивать голову для срабатывания.',
-    delayLabel: 'Время на возврат головы',
-    delayHelp: 'Пауза после шага. Верните голову в удобную позу; после паузы удержите её неподвижно до снятия блокировки.',
-    strictLabel: 'Строгость моргания',
-    strictHelp: 'Правее — требуется более полное закрытие глаз',
-    invertLabel: 'Инверсия влево/вправо',
-    invertHelp: 'Если поворот влево выбирает правую клавишу, переключите инверсию.',
-    doubleStepAngleLabel: 'Двойной вбок',
-    doubleStepVerticalAngleLabel: 'Двойной кивок',
-    doubleStepVerticalAngleHelp: 'Наклон головы вверх или вниз на этот угол перемещает выделение сразу на две клавиши. Автоповтора нет.',
-    doubleStepAngleHelp: 'Независимый угол: одно движение головой перемещает выделение сразу на две клавиши. Автоповтора нет.',
-    reset: 'Сбросить',
-    unitDeg: '°',
-    unitMs: 'мс',
-    unitPercent: '%',
-    storageWarning: 'Хранилище недоступно. Настройки действуют до перезапуска.',
-    error: 'Не удалось применить настройки. Текущие значения сохранены.',
-    unavailable: 'Настройки недоступны.'
-  },
-  uk: {
-    summary: 'Чутливість',
-    headLabel: 'Поворот голови',
-    headHelp: 'Менше значення — менше потрібно повертати голову для спрацювання.',
-    delayLabel: 'Час на повернення голови',
-    delayHelp: 'Пауза після кроку. Поверніть голову у зручну позу; після паузи тримайте її нерухомо до зняття блокування.',
-    strictLabel: 'Суворість моргання',
-    strictHelp: 'Правіше — потрібне повніше закриття очей',
-    invertLabel: 'Інверсія вліво/вправо',
-    invertHelp: 'Якщо поворот ліворуч вибирає праву клавішу, перемкніть інверсію.',
-    doubleStepAngleLabel: 'Подвійний вбік',
-    doubleStepVerticalAngleLabel: 'Подвійний кивок',
-    doubleStepVerticalAngleHelp: 'Нахил голови вгору або вниз на цей кут переміщує виділення одразу на дві клавіші. Автоповтору немає.',
-    doubleStepAngleHelp: 'Незалежний кут: один рух головою переміщує виділення одразу на дві клавіші. Автоповтору немає.',
-    reset: 'Скинути',
-    unitDeg: '°',
-    unitMs: 'мс',
-    unitPercent: '%',
-    storageWarning: 'Сховище недоступне. Налаштування діють до перезапуску.',
-    error: 'Не вдалося застосувати налаштування. Поточні значення збережено.',
-    unavailable: 'Налаштування недоступні.'
-  },
-  en: {
-    summary: 'Sensitivity',
-    headLabel: 'Head turn',
-    headHelp: 'Lower values require less head movement to trigger.',
-    delayLabel: 'Time to return the head',
-    delayHelp: 'Pause after a step. Return to a comfortable pose; after the pause, hold it still until navigation unlocks.',
-    strictLabel: 'Blink strictness',
-    strictHelp: 'Further right — a fuller eyelid closure is required',
-    invertLabel: 'Invert left/right',
-    invertHelp: 'If a left turn selects the right key, toggle this option.',
-    doubleStepAngleLabel: 'Double sideways',
-    doubleStepVerticalAngleLabel: 'Double up/down',
-    doubleStepVerticalAngleHelp: 'Tilting your head up or down by this angle moves the selection two keys at once. It never auto-repeats.',
-    doubleStepAngleHelp: 'Independent angle: one head movement moves the selection two keys at once. It never auto-repeats.',
-    reset: 'Reset',
-    unitDeg: '°',
-    unitMs: 'ms',
-    unitPercent: '%',
-    storageWarning: 'Storage is unavailable. Settings last until restart.',
-    error: 'Could not apply settings. Current values are kept.',
-    unavailable: 'Settings are unavailable.'
-  },
-  de: {
-    summary: 'Empfindlichkeit',
-    headLabel: 'Kopfdrehung',
-    headHelp: 'Kleinere Werte erfordern weniger Kopfbewegung zum Auslösen.',
-    delayLabel: 'Zeit für die Kopfrückkehr',
-    delayHelp: 'Pause nach einem Schritt. Kehren Sie in eine bequeme Haltung zurück; halten Sie den Kopf nach der Pause still, bis die Navigation freigegeben wird.',
-    strictLabel: 'Blinzelstrenge',
-    strictHelp: 'Weiter rechts — ein vollständigeres Schließen der Augenlider ist nötig',
-    invertLabel: 'Links/rechts umkehren',
-    invertHelp: 'Wählt eine Linksdrehung die rechte Taste, schalten Sie diese Option um.',
-    doubleStepAngleLabel: 'Doppelt seitlich',
-    doubleStepVerticalAngleLabel: 'Doppelt vertikal',
-    doubleStepVerticalAngleHelp: 'Eine Kopfneigung nach oben oder unten um diesen Winkel verschiebt die Auswahl in einer Bewegung um zwei Tasten. Es gibt keine automatische Wiederholung.',
-    doubleStepAngleHelp: 'Unabhängiger Winkel: Eine Kopfbewegung verschiebt die Auswahl um zwei Tasten. Keine automatische Wiederholung.',
-    reset: 'Zurücksetzen',
-    unitDeg: '°',
-    unitMs: 'ms',
-    unitPercent: '%',
-    storageWarning: 'Speicher nicht verfügbar. Einstellungen gelten bis zum Neustart.',
-    error: 'Einstellungen konnten nicht angewendet werden. Aktuelle Werte bleiben erhalten.',
-    unavailable: 'Einstellungen sind nicht verfügbar.'
-  },
-  es: {
-    summary: 'Sensibilidad',
-    headLabel: 'Giro de cabeza',
-    headHelp: 'Los valores más bajos requieren menos movimiento de cabeza para activarse.',
-    delayLabel: 'Tiempo para volver la cabeza',
-    delayHelp: 'Pausa tras un paso. Vuelva a una postura cómoda; después de la pausa, mantenga la cabeza quieta hasta que se desbloquee la navegación.',
-    strictLabel: 'Rigor del parpadeo',
-    strictHelp: 'Más a la derecha — se exige un cierre más completo de los párpados',
-    invertLabel: 'Invertir izquierda/derecha',
-    invertHelp: 'Si al girar a la izquierda se selecciona la tecla derecha, cambie esta opción.',
-    doubleStepAngleLabel: 'Doble lateral',
-    doubleStepVerticalAngleLabel: 'Doble vertical',
-    doubleStepVerticalAngleHelp: 'Inclinar la cabeza hacia arriba o hacia abajo este ángulo mueve la selección dos teclas de una vez. No se repite automáticamente.',
-    doubleStepAngleHelp: 'Ángulo independiente: un movimiento de cabeza mueve la selección dos teclas. No se repite automáticamente.',
-    reset: 'Restablecer',
-    unitDeg: '°',
-    unitMs: 'ms',
-    unitPercent: '%',
-    storageWarning: 'El almacenamiento no está disponible. Los ajustes duran hasta reiniciar.',
-    error: 'No se pudieron aplicar los ajustes. Se mantienen los valores actuales.',
-    unavailable: 'Los ajustes no están disponibles.'
-  },
-  pt: {
-    summary: 'Sensibilidade',
-    headLabel: 'Viragem da cabeça',
-    headHelp: 'Valores mais baixos exigem menos movimento da cabeça para ativar.',
-    delayLabel: 'Tempo para voltar a cabeça',
-    delayHelp: 'Pausa após um passo. Volte a uma posição confortável; após a pausa, mantenha a cabeça parada até a navegação ser desbloqueada.',
-    strictLabel: 'Rigor da piscadela',
-    strictHelp: 'Mais à direita — é necessário um fecho mais completo das pálpebras',
-    invertLabel: 'Inverter esquerda/direita',
-    invertHelp: 'Se virar à esquerda seleciona a tecla da direita, altere esta opção.',
-    doubleStepAngleLabel: 'Duplo lateral',
-    doubleStepVerticalAngleLabel: 'Duplo vertical',
-    doubleStepVerticalAngleHelp: 'Inclinar a cabeça para cima ou para baixo este ângulo move a seleção duas teclas de uma vez. Nunca repete automaticamente.',
-    doubleStepAngleHelp: 'Ângulo independente: um movimento da cabeça move a seleção duas teclas. Nunca repete automaticamente.',
-    reset: 'Repor',
-    unitDeg: '°',
-    unitMs: 'ms',
-    unitPercent: '%',
-    storageWarning: 'O armazenamento não está disponível. As definições duram até reiniciar.',
-    error: 'Não foi possível aplicar as definições. Os valores atuais são mantidos.',
-    unavailable: 'As definições não estão disponíveis.'
-  },
-  it: {
-    summary: 'Sensibilità',
-    headLabel: 'Rotazione della testa',
-    headHelp: 'Valori più bassi richiedono meno movimento della testa per attivarsi.',
-    delayLabel: 'Tempo per riportare la testa',
-    delayHelp: 'Pausa dopo un passo. Torni in una posa comoda; dopo la pausa, tenga la testa ferma fino allo sblocco della navigazione.',
-    strictLabel: 'Rigore del battito',
-    strictHelp: 'Più a destra — è richiesta una chiusura più completa delle palpebre',
-    invertLabel: 'Inverti sinistra/destra',
-    invertHelp: 'Se girando a sinistra si seleziona il tasto a destra, cambi questa opzione.',
-    doubleStepAngleLabel: 'Doppio laterale',
-    doubleStepVerticalAngleLabel: 'Doppio verticale',
-    doubleStepVerticalAngleHelp: 'Inclinare la testa verso l’alto o il basso di questo angolo sposta la selezione di due tasti in un solo movimento. Non si ripete automaticamente.',
-    doubleStepAngleHelp: 'Angolo indipendente: un movimento della testa sposta la selezione di due tasti. Non si ripete automaticamente.',
-    reset: 'Ripristina',
-    unitDeg: '°',
-    unitMs: 'ms',
-    unitPercent: '%',
-    storageWarning: 'Archiviazione non disponibile. Le impostazioni restano fino al riavvio.',
-    error: 'Impossibile applicare le impostazioni. I valori attuali sono mantenuti.',
-    unavailable: 'Le impostazioni non sono disponibili.'
-  }
-};
 
 const FIELD_CONFIG = [
   {name: 'headAngleDeg', min: 1, max: 12, step: 0.5, decimals: 1, labelKey: 'headLabel', helpKey: 'headHelp', unitKey: 'unitDeg'},
@@ -515,14 +359,15 @@ export function initTuningPanel(app) {
     try {
       const state = app.getState();
       const locale = state && state.settings && state.settings.uiLocale;
-      return typeof locale === 'string' && hasOwn(STRINGS, locale) ? locale : 'ru';
+      return typeof locale === 'string' ? locale : 'ru';
     } catch (error) {
       return 'ru';
     }
   }
 
   function strings() {
-    return STRINGS[getLocale()] || STRINGS.ru;
+    // Texts live in locales/<id>.json; check rejects catalogs with missing keys.
+    return app.catalog('tuning') || {};
   }
 
   function formatField(field, value) {

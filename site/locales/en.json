@@ -1,1 +1,177 @@
-{"title":"Patient keyboard","textRegion":"Text input area","placeholder":"Enter text","backspace":"Backspace","clear":"Clear","keyboard":"Keyboard","numbers":"Numbers","letters":"Letters","space":"Space","settings":"Settings","close":"Close","uiLanguage":"Interface language","keyboardLayout":"Keyboard layout","resourceError":"Could not load the keyboard resources. Please try again.","storageError":"Could not save the settings on this device.","bridgeTitle":"Developer tools / local MCP","bridgeHelp":"This section connects local developer tools (MCP). The one-time code comes from bridge.cmd; the Bluetooth camera button does not need it. Pair the camera button in your operating system Bluetooth settings, then assign it under Input source.","bridgeConnect":"Connect","bridgeDisconnect":"Disconnect","bridgeCode":"Developer code (from bridge.cmd)","bridgeConnected":"Connected","bridgeDisconnected":"Disconnected","bridgeError":"The local connection failed. Please try again.","licenseTitle":"License","licenseNotice":"Noncommercial use under the PolyForm Noncommercial 1.0.0 license. Commercial licenses are available only by agreement with the author. Third-party components retain their own licenses.","licenseLink":"License text"}
+{
+  "title": "Patient keyboard",
+  "textRegion": "Text input area",
+  "placeholder": "Enter text",
+  "backspace": "Backspace",
+  "clear": "Clear",
+  "keyboard": "Keyboard",
+  "numbers": "Numbers",
+  "letters": "Letters",
+  "space": "Space",
+  "settings": "Settings",
+  "close": "Close",
+  "uiLanguage": "Interface language",
+  "keyboardLayout": "Keyboard layout",
+  "resourceError": "Could not load the keyboard resources. Please try again.",
+  "storageError": "Could not save the settings on this device.",
+  "bridgeTitle": "Developer tools / local MCP",
+  "bridgeHelp": "This section connects local developer tools (MCP). The one-time code comes from bridge.cmd; the Bluetooth camera button does not need it. Pair the camera button in your operating system Bluetooth settings, then assign it under Input source.",
+  "bridgeConnect": "Connect",
+  "bridgeDisconnect": "Disconnect",
+  "bridgeCode": "Developer code (from bridge.cmd)",
+  "bridgeConnected": "Connected",
+  "bridgeDisconnected": "Disconnected",
+  "bridgeError": "The local connection failed. Please try again.",
+  "licenseTitle": "License",
+  "licenseNotice": "Noncommercial use under the PolyForm Noncommercial 1.0.0 license. Commercial licenses are available only by agreement with the author. Third-party components retain their own licenses.",
+  "licenseLink": "License text",
+  "creditsTitle": "Acknowledgements",
+  "creditsNotice": "Thank you to everyone who helps this project. You can get in touch via GitHub.",
+  "creditsAuthor": "Author",
+  "variantKey": "Change the previous character (゛ ゜, small kana)",
+  "inputPanel": {
+    "legend": "Input source",
+    "mouth": "Lips",
+    "blink": "Blink",
+    "external": "Bluetooth camera button",
+    "mouthHelp": "Pucker to press the selected key; open your mouth wide to delete.",
+    "blinkHelp": "Blink to press. Mouth actions are disabled for safety.",
+    "externalHelp": "Pair a button in the operating system, then bind it here. The camera can still move the selection with your head.",
+    "bind": "Bind",
+    "clearBinding": "Clear binding",
+    "noBinding": "Not bound",
+    "currentBinding": "Current binding",
+    "bindingListening": "Press the desired key. Escape or Tab cancels.",
+    "bindingCanceled": "Binding canceled. The previous binding was kept.",
+    "bindingTimeout": "Binding timed out. The previous binding was kept.",
+    "bindingUnsupported": "This key cannot be bound. Press another key.",
+    "bindingSaved": "Binding saved.",
+    "bindingError": "Could not save the binding. The previous binding was kept.",
+    "bindingUntrusted": "Use the Bind button directly.",
+    "bindingOnlyExternal": "Binding is available only in external mode.",
+    "storageIssue": "Storage is unavailable. Settings last until restart.",
+    "updateError": "Could not apply settings. Current values were kept.",
+    "unavailable": "Input settings are unavailable."
+  },
+  "headPanel": {
+    "legend": "Head control",
+    "doubleStep": "Double step",
+    "doubleStepHelp": "Turning your head by the double-step angle set under Sensitivity moves the selection two keys at once in a single motion. It never auto-repeats.",
+    "unavailable": "Head control settings are unavailable."
+  },
+  "tuning": {
+    "summary": "Sensitivity",
+    "headLabel": "Head turn",
+    "headHelp": "Lower values require less head movement to trigger.",
+    "delayLabel": "Time to return the head",
+    "delayHelp": "Pause after a step. Return to a comfortable pose; after the pause, hold it still until navigation unlocks.",
+    "strictLabel": "Blink strictness",
+    "strictHelp": "Further right — a fuller eyelid closure is required",
+    "invertLabel": "Invert left/right",
+    "invertHelp": "If a left turn selects the right key, toggle this option.",
+    "doubleStepAngleLabel": "Double sideways",
+    "doubleStepVerticalAngleLabel": "Double up/down",
+    "doubleStepVerticalAngleHelp": "Tilting your head up or down by this angle moves the selection two keys at once. It never auto-repeats.",
+    "doubleStepAngleHelp": "Independent angle: one head movement moves the selection two keys at once. It never auto-repeats.",
+    "reset": "Reset",
+    "unitDeg": "°",
+    "unitMs": "ms",
+    "unitPercent": "%",
+    "storageWarning": "Storage is unavailable. Settings last until restart.",
+    "error": "Could not apply settings. Current values are kept.",
+    "unavailable": "Settings are unavailable."
+  },
+  "tracking": {
+    "base": [
+      "Camera",
+      "Stop",
+      "Neutral head pose",
+      "Camera off",
+      "Starting camera…",
+      "Look at the keyboard comfortably. Keep your head still for a few seconds.",
+      "Turn your head right, left, up or down. Blink to press the selected key.",
+      "Face not visible — input paused",
+      "Low confidence — input paused",
+      "Blink to press the highlighted key once.",
+      "Camera or model error. Start again",
+      "Use the camera button on this page",
+      "Paused",
+      "Neutral calibration required"
+    ],
+    "controlError": "Key control failed. Recalibrate the neutral head pose.",
+    "transitionEyes": "Checking eye state",
+    "eyeUnreliable": "Eye signal is unreliable — input paused",
+    "returnCenter": "Return closer to your initial comfortable head pose",
+    "turnSignal": "eye signal was ambiguous during the turn",
+    "eyeReference": "Checking eyes in this pose. Keep them normally open.",
+    "lookingDown": "Looking down",
+    "nav": {
+      "ready": "Head at neutral — switches available",
+      "locked": "Returning head — switching is blocked",
+      "hold": "Hold a comfortable pose",
+      "remaining": "{seconds} s remaining"
+    },
+    "blink": {
+      "prefix": "Blink",
+      "ready": "ready",
+      "reasons": {
+        "camera_paused": "camera paused",
+        "face_lost": "face not visible",
+        "eye_reference": "eye reference check",
+        "eyes_unreliable": "eye signal unreliable",
+        "head_motion": "head moving",
+        "eye_posture": "eye posture",
+        "closed": "eyes closed",
+        "modal_open": "settings open"
+      }
+    },
+    "mode": {
+      "mouth": {
+        "ready": "Lips: pucker to press, open your mouth wide to delete.",
+        "acquiring": "Keep your face calm and lips relaxed.",
+        "calibrating": "Look at the keyboard. Keep your head and face still.",
+        "counters": {
+          "clicks": "Clicks",
+          "deletes": "Deletes",
+          "rejected": "Rejected"
+        }
+      },
+      "blink": {
+        "ready": "Blink: blink to press the selected key.",
+        "acquiring": "Keep your eyes normally open.",
+        "calibrating": "Look at the keyboard. Keep your head still and eyes normally open."
+      },
+      "external": {
+        "ready": "External button: press the assigned key. The camera can still move the selection with your head.",
+        "acquiring": "Press the assigned external button or use your head to select.",
+        "calibrating": "Look at the keyboard. Keep your head still; the external button works separately."
+      }
+    },
+    "mouthFeedback": {
+      "release": "Relax your lips to finish the gesture.",
+      "unreliable": "Make sure your mouth is visible to the camera.",
+      "retry": "Action not accepted. Repeat the gesture."
+    },
+    "eye": [
+      "Eyes open",
+      "Eyes closed",
+      "One eye closed",
+      "Waiting for eyes",
+      "Blinks",
+      "Typed",
+      "Rejected",
+      "input conditions not met",
+      "letter not ready yet",
+      "too short",
+      "too long",
+      "face not visible",
+      "letter changed",
+      "settings open",
+      "blink cooldown",
+      "input failed",
+      "head moving",
+      "low confidence",
+      "only one eye closed"
+    ]
+  }
+}

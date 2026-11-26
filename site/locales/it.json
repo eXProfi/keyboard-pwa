@@ -1,1 +1,177 @@
-{"title":"Tastiera del paziente","textRegion":"Area di inserimento del testo","placeholder":"Inserisci il testo","backspace":"Cancella","clear":"Svuota","keyboard":"Tastiera","numbers":"Numeri","letters":"Lettere","space":"Spazio","settings":"Impostazioni","close":"Chiudi","uiLanguage":"Lingua dell'interfaccia","keyboardLayout":"Disposizione della tastiera","resourceError":"Impossibile caricare le risorse della tastiera. Riprova.","storageError":"Impossibile salvare le impostazioni su questo dispositivo.","bridgeTitle":"Strumenti per sviluppatori / MCP locale","bridgeHelp":"Questa sezione collega gli strumenti locali per sviluppatori (MCP). Il codice monouso viene fornito da bridge.cmd; il pulsante foto Bluetooth non ne ha bisogno. Abbina il pulsante nelle impostazioni Bluetooth del sistema operativo e assegnalo in Sorgente di input.","bridgeConnect":"Connetti","bridgeDisconnect":"Disconnetti","bridgeCode":"Codice sviluppatore (da bridge.cmd)","bridgeConnected":"Connesso","bridgeDisconnected":"Disconnesso","bridgeError":"Impossibile stabilire la connessione locale. Riprova.","licenseTitle":"Licenza","licenseNotice":"Uso non commerciale con la licenza PolyForm Noncommercial 1.0.0. Le licenze commerciali sono disponibili solo previo accordo con l'autore. I componenti di terze parti mantengono le proprie licenze.","licenseLink":"Testo della licenza"}
+{
+  "title": "Tastiera del paziente",
+  "textRegion": "Area di inserimento del testo",
+  "placeholder": "Inserisci il testo",
+  "backspace": "Cancella",
+  "clear": "Svuota",
+  "keyboard": "Tastiera",
+  "numbers": "Numeri",
+  "letters": "Lettere",
+  "space": "Spazio",
+  "settings": "Impostazioni",
+  "close": "Chiudi",
+  "uiLanguage": "Lingua dell'interfaccia",
+  "keyboardLayout": "Disposizione della tastiera",
+  "resourceError": "Impossibile caricare le risorse della tastiera. Riprova.",
+  "storageError": "Impossibile salvare le impostazioni su questo dispositivo.",
+  "bridgeTitle": "Strumenti per sviluppatori / MCP locale",
+  "bridgeHelp": "Questa sezione collega gli strumenti locali per sviluppatori (MCP). Il codice monouso viene fornito da bridge.cmd; il pulsante foto Bluetooth non ne ha bisogno. Abbina il pulsante nelle impostazioni Bluetooth del sistema operativo e assegnalo in Sorgente di input.",
+  "bridgeConnect": "Connetti",
+  "bridgeDisconnect": "Disconnetti",
+  "bridgeCode": "Codice sviluppatore (da bridge.cmd)",
+  "bridgeConnected": "Connesso",
+  "bridgeDisconnected": "Disconnesso",
+  "bridgeError": "Impossibile stabilire la connessione locale. Riprova.",
+  "licenseTitle": "Licenza",
+  "licenseNotice": "Uso non commerciale con la licenza PolyForm Noncommercial 1.0.0. Le licenze commerciali sono disponibili solo previo accordo con l'autore. I componenti di terze parti mantengono le proprie licenze.",
+  "licenseLink": "Testo della licenza",
+  "creditsTitle": "Ringraziamenti",
+  "creditsNotice": "Grazie a tutte le persone che aiutano questo progetto. Può contattarci tramite GitHub.",
+  "creditsAuthor": "Autore",
+  "variantKey": "Cambia il carattere precedente (゛ ゜, kana piccolo)",
+  "inputPanel": {
+    "legend": "Sorgente di input",
+    "mouth": "Labbra",
+    "blink": "Battito",
+    "external": "Pulsante foto Bluetooth",
+    "mouthHelp": "Stringi le labbra per premere il tasto selezionato; apri bene la bocca per cancellare.",
+    "blinkHelp": "Batti le palpebre per premere. Le azioni con la bocca sono disattivate per sicurezza.",
+    "externalHelp": "Accoppia un pulsante nel sistema operativo e assegnalo qui. La fotocamera può ancora muovere la selezione con la testa.",
+    "bind": "Assegna",
+    "clearBinding": "Cancella associazione",
+    "noBinding": "Non associato",
+    "currentBinding": "Associazione attuale",
+    "bindingListening": "Premi il tasto desiderato. Escape o Tab annulla.",
+    "bindingCanceled": "Associazione annullata. L’associazione precedente è stata mantenuta.",
+    "bindingTimeout": "Tempo scaduto. L’associazione precedente è stata mantenuta.",
+    "bindingUnsupported": "Questo tasto non può essere associato. Premine un altro.",
+    "bindingSaved": "Associazione salvata.",
+    "bindingError": "Impossibile salvare l’associazione. La precedente è stata mantenuta.",
+    "bindingUntrusted": "Usa direttamente il pulsante «Assegna».",
+    "bindingOnlyExternal": "L’associazione è disponibile solo in modalità esterna.",
+    "storageIssue": "Archiviazione non disponibile. Le impostazioni restano fino al riavvio.",
+    "updateError": "Impossibile applicare le impostazioni. I valori attuali sono stati mantenuti.",
+    "unavailable": "Le impostazioni di input non sono disponibili."
+  },
+  "headPanel": {
+    "legend": "Controllo con la testa",
+    "doubleStep": "Passo doppio",
+    "doubleStepHelp": "Girare la testa dell’angolo del passo doppio impostato in «Sensibilità» sposta la selezione di due tasti in un solo movimento. Non si ripete automaticamente.",
+    "unavailable": "Le impostazioni del controllo con la testa non sono disponibili."
+  },
+  "tuning": {
+    "summary": "Sensibilità",
+    "headLabel": "Rotazione della testa",
+    "headHelp": "Valori più bassi richiedono meno movimento della testa per attivarsi.",
+    "delayLabel": "Tempo per riportare la testa",
+    "delayHelp": "Pausa dopo un passo. Torni in una posa comoda; dopo la pausa, tenga la testa ferma fino allo sblocco della navigazione.",
+    "strictLabel": "Rigore del battito",
+    "strictHelp": "Più a destra — è richiesta una chiusura più completa delle palpebre",
+    "invertLabel": "Inverti sinistra/destra",
+    "invertHelp": "Se girando a sinistra si seleziona il tasto a destra, cambi questa opzione.",
+    "doubleStepAngleLabel": "Doppio laterale",
+    "doubleStepVerticalAngleLabel": "Doppio verticale",
+    "doubleStepVerticalAngleHelp": "Inclinare la testa verso l’alto o il basso di questo angolo sposta la selezione di due tasti in un solo movimento. Non si ripete automaticamente.",
+    "doubleStepAngleHelp": "Angolo indipendente: un movimento della testa sposta la selezione di due tasti. Non si ripete automaticamente.",
+    "reset": "Ripristina",
+    "unitDeg": "°",
+    "unitMs": "ms",
+    "unitPercent": "%",
+    "storageWarning": "Archiviazione non disponibile. Le impostazioni restano fino al riavvio.",
+    "error": "Impossibile applicare le impostazioni. I valori attuali sono mantenuti.",
+    "unavailable": "Le impostazioni non sono disponibili."
+  },
+  "tracking": {
+    "base": [
+      "Fotocamera",
+      "Ferma",
+      "Posizione neutra",
+      "Fotocamera spenta",
+      "Avvio della fotocamera…",
+      "Guardi comodamente la tastiera. Tenga la testa ferma per qualche secondo.",
+      "Muova la testa a destra, sinistra, in alto o in basso. Batta le palpebre per premere.",
+      "Viso non visibile — inserimento in pausa",
+      "Bassa affidabilità — inserimento in pausa",
+      "Batta le palpebre per premere una volta il tasto evidenziato.",
+      "Errore di fotocamera o modello. Riavvii",
+      "Usi il pulsante fotocamera su questa pagina",
+      "In pausa",
+      "Calibrare la posizione neutra"
+    ],
+    "controlError": "Controllo del tasto non riuscito. Ricalibri la posizione neutra.",
+    "transitionEyes": "Verifica dello stato degli occhi",
+    "eyeUnreliable": "Segnale degli occhi non affidabile — inserimento in pausa",
+    "returnCenter": "Torni vicino alla posizione comoda iniziale della testa",
+    "turnSignal": "segnale degli occhi ambiguo durante la rotazione",
+    "eyeReference": "Verifica degli occhi in questa posa. Li tenga normalmente aperti.",
+    "lookingDown": "Sguardo verso il basso",
+    "nav": {
+      "ready": "Testa in posizione neutra — cambio disponibile",
+      "locked": "Ritorno della testa — cambio bloccato",
+      "hold": "Mantenga una posa comoda",
+      "remaining": "mancano {seconds} s"
+    },
+    "blink": {
+      "prefix": "Battito",
+      "ready": "pronto",
+      "reasons": {
+        "camera_paused": "fotocamera in pausa",
+        "face_lost": "viso non visibile",
+        "eye_reference": "verifica riferimento occhi",
+        "eyes_unreliable": "segnale degli occhi non affidabile",
+        "head_motion": "testa in movimento",
+        "eye_posture": "postura degli occhi",
+        "closed": "occhi chiusi",
+        "modal_open": "impostazioni aperte"
+      }
+    },
+    "mode": {
+      "mouth": {
+        "ready": "Labbra: stringi le labbra per premere; apri bene la bocca per cancellare.",
+        "acquiring": "Mantieni il viso calmo e le labbra rilassate.",
+        "calibrating": "Guarda la tastiera. Mantieni testa e viso fermi.",
+        "counters": {
+          "clicks": "Pressioni",
+          "deletes": "Cancellazioni",
+          "rejected": "Rifiutato"
+        }
+      },
+      "blink": {
+        "ready": "Battito: batti le palpebre per premere il tasto selezionato.",
+        "acquiring": "Mantieni gli occhi normalmente aperti.",
+        "calibrating": "Guarda la tastiera. Mantieni la testa ferma e gli occhi normalmente aperti."
+      },
+      "external": {
+        "ready": "Pulsante esterno: premi il tasto assegnato. La fotocamera può ancora muovere la selezione con la testa.",
+        "acquiring": "Premi il pulsante esterno assegnato o usa la testa per selezionare.",
+        "calibrating": "Guarda la tastiera. Mantieni la testa ferma; il pulsante esterno funziona separatamente."
+      }
+    },
+    "mouthFeedback": {
+      "release": "Rilassi le labbra per completare il gesto.",
+      "unreliable": "Si assicuri che la bocca sia visibile alla fotocamera.",
+      "retry": "Azione non accettata. Ripeta il gesto."
+    },
+    "eye": [
+      "Occhi aperti",
+      "Occhi chiusi",
+      "Un occhio chiuso",
+      "In attesa degli occhi",
+      "Battiti",
+      "Inserimenti",
+      "Rifiutato",
+      "condizioni di inserimento non soddisfatte",
+      "lettera non ancora pronta",
+      "troppo breve",
+      "troppo lungo",
+      "viso non visibile",
+      "lettera cambiata",
+      "impostazioni aperte",
+      "pausa tra battiti",
+      "inserimento non riuscito",
+      "testa in movimento",
+      "bassa affidabilità",
+      "un solo occhio chiuso"
+    ]
+  }
+}

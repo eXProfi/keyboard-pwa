@@ -1,1 +1,177 @@
-{"title":"Teclado del paciente","textRegion":"Área de entrada de texto","placeholder":"Escriba el texto","backspace":"Retroceso","clear":"Limpiar","keyboard":"Teclado","numbers":"Números","letters":"Letras","space":"Espacio","settings":"Ajustes","close":"Cerrar","uiLanguage":"Idioma de la interfaz","keyboardLayout":"Distribución del teclado","resourceError":"No se pudieron cargar los recursos del teclado. Inténtelo de nuevo.","storageError":"No se pudieron guardar los ajustes en este dispositivo.","bridgeTitle":"Herramientas de desarrollador / MCP local","bridgeHelp":"Esta sección conecta herramientas locales de desarrollo (MCP). El código de un solo uso lo proporciona bridge.cmd; el botón de foto Bluetooth no lo necesita. Empareje el botón en los ajustes Bluetooth del sistema operativo y asígnelo en Fuente de entrada.","bridgeConnect":"Conectar","bridgeDisconnect":"Desconectar","bridgeCode":"Código de desarrollador (de bridge.cmd)","bridgeConnected":"Conectado","bridgeDisconnected":"Desconectado","bridgeError":"No se pudo establecer la conexión local. Inténtelo de nuevo.","licenseTitle":"Licencia","licenseNotice":"Uso no comercial bajo la licencia PolyForm Noncommercial 1.0.0. Las licencias comerciales solo se conceden mediante acuerdo con el autor. Los componentes de terceros conservan sus propias licencias.","licenseLink":"Texto de la licencia"}
+{
+  "title": "Teclado del paciente",
+  "textRegion": "Área de entrada de texto",
+  "placeholder": "Escriba el texto",
+  "backspace": "Retroceso",
+  "clear": "Limpiar",
+  "keyboard": "Teclado",
+  "numbers": "Números",
+  "letters": "Letras",
+  "space": "Espacio",
+  "settings": "Ajustes",
+  "close": "Cerrar",
+  "uiLanguage": "Idioma de la interfaz",
+  "keyboardLayout": "Distribución del teclado",
+  "resourceError": "No se pudieron cargar los recursos del teclado. Inténtelo de nuevo.",
+  "storageError": "No se pudieron guardar los ajustes en este dispositivo.",
+  "bridgeTitle": "Herramientas de desarrollador / MCP local",
+  "bridgeHelp": "Esta sección conecta herramientas locales de desarrollo (MCP). El código de un solo uso lo proporciona bridge.cmd; el botón de foto Bluetooth no lo necesita. Empareje el botón en los ajustes Bluetooth del sistema operativo y asígnelo en Fuente de entrada.",
+  "bridgeConnect": "Conectar",
+  "bridgeDisconnect": "Desconectar",
+  "bridgeCode": "Código de desarrollador (de bridge.cmd)",
+  "bridgeConnected": "Conectado",
+  "bridgeDisconnected": "Desconectado",
+  "bridgeError": "No se pudo establecer la conexión local. Inténtelo de nuevo.",
+  "licenseTitle": "Licencia",
+  "licenseNotice": "Uso no comercial bajo la licencia PolyForm Noncommercial 1.0.0. Las licencias comerciales solo se conceden mediante acuerdo con el autor. Los componentes de terceros conservan sus propias licencias.",
+  "licenseLink": "Texto de la licencia",
+  "creditsTitle": "Agradecimientos",
+  "creditsNotice": "Gracias a todas las personas que ayudan a este proyecto. Puede contactar a través de GitHub.",
+  "creditsAuthor": "Autor",
+  "variantKey": "Cambiar el carácter anterior (゛ ゜, kana pequeño)",
+  "inputPanel": {
+    "legend": "Fuente de entrada",
+    "mouth": "Labios",
+    "blink": "Parpadeo",
+    "external": "Botón de foto Bluetooth",
+    "mouthHelp": "Frunza los labios para pulsar la tecla seleccionada; abra mucho la boca para borrar.",
+    "blinkHelp": "Parpadee para pulsar. Las acciones con la boca están desactivadas por seguridad.",
+    "externalHelp": "Empareje un botón en el sistema operativo y asígnelo aquí. La cámara aún puede mover la selección con la cabeza.",
+    "bind": "Asignar",
+    "clearBinding": "Borrar asignación",
+    "noBinding": "Sin asignar",
+    "currentBinding": "Asignación actual",
+    "bindingListening": "Pulse la tecla deseada. Escape o Tab cancela.",
+    "bindingCanceled": "Asignación cancelada. Se conservó la asignación anterior.",
+    "bindingTimeout": "Se agotó el tiempo. Se conservó la asignación anterior.",
+    "bindingUnsupported": "Esta tecla no se puede asignar. Pulse otra.",
+    "bindingSaved": "Asignación guardada.",
+    "bindingError": "No se pudo guardar la asignación. Se conservó la anterior.",
+    "bindingUntrusted": "Use el botón «Asignar» directamente.",
+    "bindingOnlyExternal": "La asignación solo está disponible en modo externo.",
+    "storageIssue": "El almacenamiento no está disponible. Los ajustes duran hasta reiniciar.",
+    "updateError": "No se pudieron aplicar los ajustes. Se mantienen los valores actuales.",
+    "unavailable": "Los ajustes de entrada no están disponibles."
+  },
+  "headPanel": {
+    "legend": "Control con la cabeza",
+    "doubleStep": "Paso doble",
+    "doubleStepHelp": "Girar la cabeza el ángulo del paso doble ajustado en «Sensibilidad» mueve la selección dos teclas de una vez en un solo movimiento. No se repite automáticamente.",
+    "unavailable": "Los ajustes de control con la cabeza no están disponibles."
+  },
+  "tuning": {
+    "summary": "Sensibilidad",
+    "headLabel": "Giro de cabeza",
+    "headHelp": "Los valores más bajos requieren menos movimiento de cabeza para activarse.",
+    "delayLabel": "Tiempo para volver la cabeza",
+    "delayHelp": "Pausa tras un paso. Vuelva a una postura cómoda; después de la pausa, mantenga la cabeza quieta hasta que se desbloquee la navegación.",
+    "strictLabel": "Rigor del parpadeo",
+    "strictHelp": "Más a la derecha — se exige un cierre más completo de los párpados",
+    "invertLabel": "Invertir izquierda/derecha",
+    "invertHelp": "Si al girar a la izquierda se selecciona la tecla derecha, cambie esta opción.",
+    "doubleStepAngleLabel": "Doble lateral",
+    "doubleStepVerticalAngleLabel": "Doble vertical",
+    "doubleStepVerticalAngleHelp": "Inclinar la cabeza hacia arriba o hacia abajo este ángulo mueve la selección dos teclas de una vez. No se repite automáticamente.",
+    "doubleStepAngleHelp": "Ángulo independiente: un movimiento de cabeza mueve la selección dos teclas. No se repite automáticamente.",
+    "reset": "Restablecer",
+    "unitDeg": "°",
+    "unitMs": "ms",
+    "unitPercent": "%",
+    "storageWarning": "El almacenamiento no está disponible. Los ajustes duran hasta reiniciar.",
+    "error": "No se pudieron aplicar los ajustes. Se mantienen los valores actuales.",
+    "unavailable": "Los ajustes no están disponibles."
+  },
+  "tracking": {
+    "base": [
+      "Cámara",
+      "Detener",
+      "Posición neutra",
+      "Cámara apagada",
+      "Iniciando cámara…",
+      "Mire el teclado cómodamente. Mantenga la cabeza quieta unos segundos.",
+      "Mueva la cabeza a derecha, izquierda, arriba o abajo. Parpadee para pulsar.",
+      "Rostro no visible — entrada en pausa",
+      "Baja confianza — entrada en pausa",
+      "Parpadee para pulsar una vez la tecla resaltada.",
+      "Error de cámara o modelo. Inicie de nuevo",
+      "Use el botón de cámara de esta página",
+      "En pausa",
+      "Calibre la posición neutra"
+    ],
+    "controlError": "Falló el control de la tecla. Recalibre la posición neutra.",
+    "transitionEyes": "Comprobando el estado de los ojos",
+    "eyeUnreliable": "Señal de ojos poco fiable — entrada en pausa",
+    "returnCenter": "Vuelva cerca de la posición cómoda inicial de la cabeza",
+    "turnSignal": "señal de ojos ambigua durante el giro",
+    "eyeReference": "Comprobando ojos en esta postura. Manténgalos abiertos normalmente.",
+    "lookingDown": "Mirando hacia abajo",
+    "nav": {
+      "ready": "Cabeza en neutro — cambio disponible",
+      "locked": "Volviendo la cabeza — cambio bloqueado",
+      "hold": "Mantenga una postura cómoda",
+      "remaining": "quedan {seconds} s"
+    },
+    "blink": {
+      "prefix": "Parpadeo",
+      "ready": "listo",
+      "reasons": {
+        "camera_paused": "cámara en pausa",
+        "face_lost": "rostro no visible",
+        "eye_reference": "comprobación de referencia ocular",
+        "eyes_unreliable": "señal de ojos poco fiable",
+        "head_motion": "cabeza en movimiento",
+        "eye_posture": "postura de ojos",
+        "closed": "ojos cerrados",
+        "modal_open": "ajustes abiertos"
+      }
+    },
+    "mode": {
+      "mouth": {
+        "ready": "Labios: frunza los labios para pulsar; abra mucho la boca para borrar.",
+        "acquiring": "Mantenga el rostro tranquilo y los labios relajados.",
+        "calibrating": "Mire el teclado. Mantenga la cabeza y el rostro quietos.",
+        "counters": {
+          "clicks": "Pulsaciones",
+          "deletes": "Borrados",
+          "rejected": "Rechazado"
+        }
+      },
+      "blink": {
+        "ready": "Parpadeo: parpadee para pulsar la tecla seleccionada.",
+        "acquiring": "Mantenga los ojos normalmente abiertos.",
+        "calibrating": "Mire el teclado. Mantenga la cabeza quieta y los ojos normalmente abiertos."
+      },
+      "external": {
+        "ready": "Botón externo: pulse la tecla asignada. La cámara aún puede mover la selección con la cabeza.",
+        "acquiring": "Pulse el botón externo asignado o use la cabeza para seleccionar.",
+        "calibrating": "Mire el teclado. Mantenga la cabeza quieta; el botón externo funciona por separado."
+      }
+    },
+    "mouthFeedback": {
+      "release": "Relaje los labios para terminar el gesto.",
+      "unreliable": "Asegúrese de que la cámara pueda ver su boca.",
+      "retry": "Acción no aceptada. Repita el gesto."
+    },
+    "eye": [
+      "Ojos abiertos",
+      "Ojos cerrados",
+      "Un ojo cerrado",
+      "Esperando ojos",
+      "Parpadeos",
+      "Entradas",
+      "Rechazado",
+      "condiciones de entrada no cumplidas",
+      "letra aún no lista",
+      "demasiado corto",
+      "demasiado largo",
+      "rostro no visible",
+      "letra cambiada",
+      "ajustes abiertos",
+      "pausa entre parpadeos",
+      "falló la entrada",
+      "cabeza en movimiento",
+      "baja confianza",
+      "solo un ojo cerrado"
+    ]
+  }
+}

@@ -4,157 +4,16 @@ import {TrackingEngine} from './engine.js';
 import {HeadBlinkController} from './controller.js';
 import {initTuningPanel} from './tuning-panel.js';
 
-const STRINGS = {
-  ru: ["Камера", "Остановить", "Нейтраль головы", "Камера выключена", "Запуск камеры…", "Смотрите на клавиатуру в удобной позе. Несколько секунд держите голову спокойно.", "Поворачивайте голову вправо, влево, вверх или вниз. Моргните для нажатия.", "Лицо не видно — ввод приостановлен", "Недостаточная уверенность — ввод приостановлен", "Моргните: будет одно нажатие выделенной клавиши.", "Ошибка камеры или модели. Повторите запуск", "Включите камеру кнопкой на странице", "Пауза", "Настройка нейтрали необходима"],
-  uk: ["Камера", "Зупинити", "Нейтраль голови", "Камеру вимкнено", "Запуск камери…", "Дивіться на клавіатуру в зручній позі. Кілька секунд тримайте голову спокійно.", "Повертайте голову праворуч, ліворуч, угору або вниз. Моргніть для натискання.", "Обличчя не видно — введення призупинено", "Недостатня впевненість — введення призупинено", "Моргніть: буде одне натискання виділеної клавіші.", "Помилка камери або моделі. Повторіть запуск", "Увімкніть камеру кнопкою на сторінці", "Пауза", "Потрібне налаштування нейтралі"],
-  en: ["Camera", "Stop", "Neutral head pose", "Camera off", "Starting camera…", "Look at the keyboard comfortably. Keep your head still for a few seconds.", "Turn your head right, left, up or down. Blink to press the selected key.", "Face not visible — input paused", "Low confidence — input paused", "Blink to press the highlighted key once.", "Camera or model error. Start again", "Use the camera button on this page", "Paused", "Neutral calibration required"],
-  de: ["Kamera", "Stoppen", "Neutrale Kopfhaltung", "Kamera aus", "Kamera startet…", "Blicken Sie bequem auf die Tastatur. Halten Sie den Kopf kurz ruhig.", "Bewegen Sie den Kopf nach rechts, links, oben oder unten. Blinzeln zum Drücken.", "Gesicht nicht sichtbar — Eingabe pausiert", "Geringe Sicherheit — Eingabe pausiert", "Blinzeln Sie, um die markierte Taste einmal zu drücken.", "Kamera- oder Modellfehler. Erneut starten", "Kamera über die Schaltfläche dieser Seite starten", "Pausiert", "Neutrale Kopfhaltung kalibrieren"],
-  es: ["Cámara", "Detener", "Posición neutra", "Cámara apagada", "Iniciando cámara…", "Mire el teclado cómodamente. Mantenga la cabeza quieta unos segundos.", "Mueva la cabeza a derecha, izquierda, arriba o abajo. Parpadee para pulsar.", "Rostro no visible — entrada en pausa", "Baja confianza — entrada en pausa", "Parpadee para pulsar una vez la tecla resaltada.", "Error de cámara o modelo. Inicie de nuevo", "Use el botón de cámara de esta página", "En pausa", "Calibre la posición neutra"],
-  pt: ["Câmara", "Parar", "Posição neutra", "Câmara desligada", "A iniciar a câmara…", "Olhe confortavelmente para o teclado. Mantenha a cabeça imóvel alguns segundos.", "Mova a cabeça para a direita, esquerda, cima ou baixo. Pisque para premir.", "Rosto não visível — entrada em pausa", "Baixa confiança — entrada em pausa", "Pisque para premir uma vez a tecla destacada.", "Erro da câmara ou modelo. Inicie novamente", "Use o botão de câmara nesta página", "Em pausa", "Calibre a posição neutra"],
-  it: ["Fotocamera", "Ferma", "Posizione neutra", "Fotocamera spenta", "Avvio della fotocamera…", "Guardi comodamente la tastiera. Tenga la testa ferma per qualche secondo.", "Muova la testa a destra, sinistra, in alto o in basso. Batta le palpebre per premere.", "Viso non visibile — inserimento in pausa", "Bassa affidabilità — inserimento in pausa", "Batta le palpebre per premere una volta il tasto evidenziato.", "Errore di fotocamera o modello. Riavvii", "Usi il pulsante fotocamera su questa pagina", "In pausa", "Calibrare la posizione neutra"]
-};
-
-const CONTROL_ERROR = {
-  ru:'Ошибка управления клавишей. Перенастройте нейтраль головы.',
-  uk:'Помилка керування клавішею. Налаштуйте нейтраль голови знову.',
-  en:'Key control failed. Recalibrate the neutral head pose.',
-  de:'Tastensteuerung fehlgeschlagen. Neutrale Kopfhaltung neu kalibrieren.',
-  es:'Falló el control de la tecla. Recalibre la posición neutra.',
-  pt:'Falha no controlo da tecla. Calibre novamente a posição neutra.',
-  it:'Controllo del tasto non riuscito. Ricalibri la posizione neutra.'
-};
-
 function publicError(code) {
   const error = new Error(code);
   error.code = code;
   return error;
 }
 
-// Each row: open, closed, asymmetric, waiting, detected, typed, rejected, fallback;
-// then the rejection reasons in REJECT_KEYS order. These are current diagnostics,
+// locales/<id>.json tracking.eye: open, closed, asymmetric, waiting, detected,
+// typed, rejected, fallback; then the rejection reasons in REJECT_KEYS order. These are current diagnostics,
 // not a saved eye signal or biometric history.
 const REJECT_KEYS = ['not_armed','too_short','too_long','face_lost','selection_changed','modal_open','cooldown','callback_failed','moving','low_confidence','one_eye'];
-const TRANSITION_EYES = {
-  ru:'Состояние глаз уточняется', uk:'Стан очей уточнюється', en:'Checking eye state',
-  de:'Augenzustand wird geprüft', es:'Comprobando el estado de los ojos',
-  pt:'A verificar o estado dos olhos', it:'Verifica dello stato degli occhi'
-};
-const EYE_UNRELIABLE = {
-  ru:'Глаза видны недостаточно уверенно — ввод приостановлен',
-  uk:'Очі видно недостатньо впевнено — введення призупинено',
-  en:'Eye signal is unreliable — input paused',
-  de:'Augensignal unzuverlässig — Eingabe pausiert',
-  es:'Señal de ojos poco fiable — entrada en pausa',
-  pt:'Sinal dos olhos pouco fiável — entrada em pausa',
-  it:'Segnale degli occhi non affidabile — inserimento in pausa'
-};
-const RETURN_CENTER = {
-  ru:'Вернитесь ближе к исходной удобной позе головы',
-  uk:'Поверніться ближче до початкової зручної пози голови',
-  en:'Return closer to your initial comfortable head pose',
-  de:'Kehren Sie näher zur anfänglichen bequemen Kopfhaltung zurück',
-  es:'Vuelva cerca de la posición cómoda inicial de la cabeza',
-  pt:'Volte para perto da posição inicial confortável da cabeça',
-  it:'Torni vicino alla posizione comoda iniziale della testa'
-};
-const TURN_SIGNAL = {
-  ru:'во время поворота сигнал глаз был неоднозначным',
-  uk:'під час повороту сигнал очей був неоднозначним',
-  en:'eye signal was ambiguous during the turn',
-  de:'Augensignal während der Drehung mehrdeutig',
-  es:'señal de ojos ambigua durante el giro',
-  pt:'sinal dos olhos ambíguo durante a rotação',
-  it:'segnale degli occhi ambiguo durante la rotazione'
-};
-const EYE_REFERENCE = {
-  ru:'Проверка глаз в новой позе. Держите глаза обычно открытыми.',
-  uk:'Перевірка очей у новій позі. Тримайте очі звично відкритими.',
-  en:'Checking eyes in this pose. Keep them normally open.',
-  de:'Augenprüfung in dieser Haltung. Augen normal offen halten.',
-  es:'Comprobando ojos en esta postura. Manténgalos abiertos normalmente.',
-  pt:'A verificar os olhos nesta posição. Mantenha-os normalmente abertos.',
-  it:'Verifica degli occhi in questa posa. Li tenga normalmente aperti.'
-};
-const LOOKING_DOWN = {
-  ru:'Взгляд вниз',uk:'Погляд униз',en:'Looking down',de:'Blick nach unten',
-  es:'Mirando hacia abajo',pt:'A olhar para baixo',it:'Sguardo verso il basso'
-};
-const NAV_TEXT = {
-  ru: {ready:'Голова в исходном положении — переключения доступны', locked:'Возврат головы — переключения заблокированы', hold:'Удержите удобную позу', remaining:'осталось {seconds} с'},
-  uk: {ready:'Голова у вихідному положенні — перемикання доступні', locked:'Повернення голови — перемикання заблоковані', hold:'Утримайте зручну позу', remaining:'залишилося {seconds} с'},
-  en: {ready:'Head at neutral — switches available', locked:'Returning head — switching is blocked', hold:'Hold a comfortable pose', remaining:'{seconds} s remaining'},
-  de: {ready:'Kopf in Neutralstellung — Umschalten verfügbar', locked:'Kopf zurückführen — Umschalten blockiert', hold:'Bequeme Haltung halten', remaining:'noch {seconds} s'},
-  es: {ready:'Cabeza en neutro — cambio disponible', locked:'Volviendo la cabeza — cambio bloqueado', hold:'Mantenga una postura cómoda', remaining:'quedan {seconds} s'},
-  pt: {ready:'Cabeça na posição neutra — mudança disponível', locked:'A voltar a cabeça — mudança bloqueada', hold:'Mantenha uma posição confortável', remaining:'faltam {seconds} s'},
-  it: {ready:'Testa in posizione neutra — cambio disponibile', locked:'Ritorno della testa — cambio bloccato', hold:'Mantenga una posa comoda', remaining:'mancano {seconds} s'}
-};
-const BLINK_TEXT = {
-  ru: {prefix:'Моргание', ready:'готово', reasons:{camera_paused:'камера на паузе', face_lost:'лицо не видно', eye_reference:'проверка глаз', eyes_unreliable:'сигнал глаз ненадёжен', head_motion:'движение головы', eye_posture:'положение глаз', closed:'глаза закрыты', modal_open:'открыты настройки'}},
-  uk: {prefix:'Моргання', ready:'готове', reasons:{camera_paused:'камера на паузі', face_lost:'обличчя не видно', eye_reference:'перевірка очей', eyes_unreliable:'сигнал очей ненадійний', head_motion:'рух голови', eye_posture:'положення очей', closed:'очі закриті', modal_open:'відкриті налаштування'}},
-  en: {prefix:'Blink', ready:'ready', reasons:{camera_paused:'camera paused', face_lost:'face not visible', eye_reference:'eye reference check', eyes_unreliable:'eye signal unreliable', head_motion:'head moving', eye_posture:'eye posture', closed:'eyes closed', modal_open:'settings open'}},
-  de: {prefix:'Blinzeln', ready:'bereit', reasons:{camera_paused:'Kamera pausiert', face_lost:'Gesicht nicht sichtbar', eye_reference:'Augenreferenzprüfung', eyes_unreliable:'Augensignal unzuverlässig', head_motion:'Kopf bewegt sich', eye_posture:'Augenhaltung', closed:'Augen geschlossen', modal_open:'Einstellungen offen'}},
-  es: {prefix:'Parpadeo', ready:'listo', reasons:{camera_paused:'cámara en pausa', face_lost:'rostro no visible', eye_reference:'comprobación de referencia ocular', eyes_unreliable:'señal de ojos poco fiable', head_motion:'cabeza en movimiento', eye_posture:'postura de ojos', closed:'ojos cerrados', modal_open:'ajustes abiertos'}},
-  pt: {prefix:'Piscadela', ready:'pronta', reasons:{camera_paused:'câmara em pausa', face_lost:'rosto não visível', eye_reference:'verificação de referência dos olhos', eyes_unreliable:'sinal dos olhos pouco fiável', head_motion:'cabeça em movimento', eye_posture:'postura dos olhos', closed:'olhos fechados', modal_open:'definições abertas'}},
-  it: {prefix:'Battito', ready:'pronto', reasons:{camera_paused:'fotocamera in pausa', face_lost:'viso non visibile', eye_reference:'verifica riferimento occhi', eyes_unreliable:'segnale degli occhi non affidabile', head_motion:'testa in movimento', eye_posture:'postura degli occhi', closed:'occhi chiusi', modal_open:'impostazioni aperte'}}
-};
-const MODE_TEXT = {
-  ru: {
-    mouth: {ready:'Губы: поцелуй — нажатие, открытый рот — удаление.',acquiring:'Держите лицо спокойно, губы расслаблены.',calibrating:'Смотрите на клавиатуру. Держите голову и лицо спокойно.',counters:{clicks:'Нажатия',deletes:'Удаления',rejected:'Отклонено'}},
-    blink: {ready:'Моргание: моргните для нажатия выделенной клавиши.',acquiring:'Держите глаза обычно открытыми.',calibrating:'Смотрите на клавиатуру. Держите голову спокойно, глаза обычно открытыми.'},
-    external: {ready:'Внешняя кнопка: нажмите назначенную клавишу. Камера может двигать выделение головой.',acquiring:'Нажмите назначенную внешнюю кнопку или используйте голову для выбора.',calibrating:'Смотрите на клавиатуру. Держите голову спокойно; внешняя кнопка работает отдельно.'}
-  },
-  uk: {
-    mouth: {ready:'Губи: поцілунок — натискання, широко відкритий рот — видалення.',acquiring:'Тримайте обличчя спокійно, губи розслаблені.',calibrating:'Дивіться на клавіатуру. Тримайте голову й обличчя спокійно.',counters:{clicks:'Натискання',deletes:'Видалення',rejected:'Відхилено'}},
-    blink: {ready:'Моргання: моргніть для натискання виділеної клавіші.',acquiring:'Тримайте очі звично відкритими.',calibrating:'Дивіться на клавіатуру. Тримайте голову спокійно, очі звично відкритими.'},
-    external: {ready:'Зовнішня кнопка: натисніть призначену клавішу. Камера може рухати виділення головою.',acquiring:'Натисніть призначену зовнішню кнопку або використовуйте голову для вибору.',calibrating:'Дивіться на клавіатуру. Тримайте голову спокійно; зовнішня кнопка працює окремо.'}
-  },
-  en: {
-    mouth: {ready:'Lips: pucker to press, open your mouth wide to delete.',acquiring:'Keep your face calm and lips relaxed.',calibrating:'Look at the keyboard. Keep your head and face still.',counters:{clicks:'Clicks',deletes:'Deletes',rejected:'Rejected'}},
-    blink: {ready:'Blink: blink to press the selected key.',acquiring:'Keep your eyes normally open.',calibrating:'Look at the keyboard. Keep your head still and eyes normally open.'},
-    external: {ready:'External button: press the assigned key. The camera can still move the selection with your head.',acquiring:'Press the assigned external button or use your head to select.',calibrating:'Look at the keyboard. Keep your head still; the external button works separately.'}
-  },
-  de: {
-    mouth: {ready:'Lippen: Lippen spitzen — drücken, Mund weit öffnen — löschen.',acquiring:'Halten Sie das Gesicht ruhig und die Lippen entspannt.',calibrating:'Blicken Sie auf die Tastatur. Halten Sie Kopf und Gesicht ruhig.',counters:{clicks:'Drücken',deletes:'Löschen',rejected:'Abgelehnt'}},
-    blink: {ready:'Blinzeln: blinzeln Sie, um die markierte Taste zu drücken.',acquiring:'Halten Sie die Augen normal offen.',calibrating:'Blicken Sie auf die Tastatur. Halten Sie den Kopf ruhig und die Augen normal offen.'},
-    external: {ready:'Externe Taste: Drücken Sie die zugewiesene Taste. Die Kamera kann die Auswahl weiterhin per Kopfbewegung steuern.',acquiring:'Drücken Sie die zugewiesene externe Taste oder wählen Sie mit dem Kopf.',calibrating:'Blicken Sie auf die Tastatur. Halten Sie den Kopf ruhig; die externe Taste funktioniert separat.'}
-  },
-  es: {
-    mouth: {ready:'Labios: frunza los labios para pulsar; abra mucho la boca para borrar.',acquiring:'Mantenga el rostro tranquilo y los labios relajados.',calibrating:'Mire el teclado. Mantenga la cabeza y el rostro quietos.',counters:{clicks:'Pulsaciones',deletes:'Borrados',rejected:'Rechazado'}},
-    blink: {ready:'Parpadeo: parpadee para pulsar la tecla seleccionada.',acquiring:'Mantenga los ojos normalmente abiertos.',calibrating:'Mire el teclado. Mantenga la cabeza quieta y los ojos normalmente abiertos.'},
-    external: {ready:'Botón externo: pulse la tecla asignada. La cámara aún puede mover la selección con la cabeza.',acquiring:'Pulse el botón externo asignado o use la cabeza para seleccionar.',calibrating:'Mire el teclado. Mantenga la cabeza quieta; el botón externo funciona por separado.'}
-  },
-  pt: {
-    mouth: {ready:'Lábios: franza os lábios para premir; abra bem a boca para apagar.',acquiring:'Mantenha o rosto calmo e os lábios relaxados.',calibrating:'Olhe para o teclado. Mantenha a cabeça e o rosto imóveis.',counters:{clicks:'Pressões',deletes:'Apagamentos',rejected:'Rejeitado'}},
-    blink: {ready:'Piscadela: pisque para premir a tecla selecionada.',acquiring:'Mantenha os olhos normalmente abertos.',calibrating:'Olhe para o teclado. Mantenha a cabeça imóvel e os olhos normalmente abertos.'},
-    external: {ready:'Botão externo: prima a tecla associada. A câmara ainda pode mover a seleção com a cabeça.',acquiring:'Prima o botão externo associado ou use a cabeça para selecionar.',calibrating:'Olhe para o teclado. Mantenha a cabeça imóvel; o botão externo funciona separadamente.'}
-  },
-  it: {
-    mouth: {ready:'Labbra: stringi le labbra per premere; apri bene la bocca per cancellare.',acquiring:'Mantieni il viso calmo e le labbra rilassate.',calibrating:'Guarda la tastiera. Mantieni testa e viso fermi.',counters:{clicks:'Pressioni',deletes:'Cancellazioni',rejected:'Rifiutato'}},
-    blink: {ready:'Battito: batti le palpebre per premere il tasto selezionato.',acquiring:'Mantieni gli occhi normalmente aperti.',calibrating:'Guarda la tastiera. Mantieni la testa ferma e gli occhi normalmente aperti.'},
-    external: {ready:'Pulsante esterno: premi il tasto assegnato. La fotocamera può ancora muovere la selezione con la testa.',acquiring:'Premi il pulsante esterno assegnato o usa la testa per selezionare.',calibrating:'Guarda la tastiera. Mantieni la testa ferma; il pulsante esterno funziona separatamente.'}
-  }
-};
-
-const MOUTH_FEEDBACK = {
-  ru:{release:'Верните губы в обычное положение, чтобы завершить жест.',unreliable:'Убедитесь, что рот виден камере.',retry:'Действие не принято — повторите жест.'},
-  uk:{release:'Поверніть губи у звичайне положення, щоб завершити жест.',unreliable:'Переконайтеся, що рот видно камері.',retry:'Дію не прийнято — повторіть жест.'},
-  en:{release:'Relax your lips to finish the gesture.',unreliable:'Make sure your mouth is visible to the camera.',retry:'Action not accepted. Repeat the gesture.'},
-  de:{release:'Entspannen Sie die Lippen, um die Geste abzuschließen.',unreliable:'Achten Sie darauf, dass die Kamera Ihren Mund sehen kann.',retry:'Aktion nicht übernommen. Wiederholen Sie die Geste.'},
-  es:{release:'Relaje los labios para terminar el gesto.',unreliable:'Asegúrese de que la cámara pueda ver su boca.',retry:'Acción no aceptada. Repita el gesto.'},
-  pt:{release:'Relaxe os lábios para terminar o gesto.',unreliable:'Certifique-se de que a câmara consegue ver a sua boca.',retry:'Ação não aceite. Repita o gesto.'},
-  it:{release:'Rilassi le labbra per completare il gesto.',unreliable:'Si assicuri che la bocca sia visibile alla fotocamera.',retry:'Azione non accettata. Ripeta il gesto.'}
-};
-
-const EYE_TEXT = {
-  ru:['Глаза открыты','Глаза закрыты','Закрыт один глаз','Ожидание глаз','Морганий','Вводов','Не принято','условия ввода не выполнены','буква ещё не готова','слишком короткое','слишком долгое','лицо не видно','буква изменилась','открыты настройки','пауза между морганиями','ошибка ввода','движение головы','низкая уверенность','закрыт только один глаз'],
-  uk:['Очі відкриті','Очі закриті','Закрите одне око','Очікування очей','Моргань','Введень','Не прийнято','умови введення не виконані','літера ще не готова','надто коротке','надто довге','обличчя не видно','літера змінилася','відкриті налаштування','пауза між морганнями','помилка введення','рух голови','низька впевненість','закрите лише одне око'],
-  en:['Eyes open','Eyes closed','One eye closed','Waiting for eyes','Blinks','Typed','Rejected','input conditions not met','letter not ready yet','too short','too long','face not visible','letter changed','settings open','blink cooldown','input failed','head moving','low confidence','only one eye closed'],
-  de:['Augen offen','Augen geschlossen','Ein Auge geschlossen','Warte auf Augen','Blinzler','Eingaben','Abgelehnt','Eingabebedingungen nicht erfüllt','Buchstabe noch nicht bereit','zu kurz','zu lang','Gesicht nicht sichtbar','Buchstabe geändert','Einstellungen offen','Pause zwischen Blinzlern','Eingabe fehlgeschlagen','Kopf bewegt sich','geringe Sicherheit','nur ein Auge geschlossen'],
-  es:['Ojos abiertos','Ojos cerrados','Un ojo cerrado','Esperando ojos','Parpadeos','Entradas','Rechazado','condiciones de entrada no cumplidas','letra aún no lista','demasiado corto','demasiado largo','rostro no visible','letra cambiada','ajustes abiertos','pausa entre parpadeos','falló la entrada','cabeza en movimiento','baja confianza','solo un ojo cerrado'],
-  pt:['Olhos abertos','Olhos fechados','Um olho fechado','A aguardar olhos','Piscadelas','Entradas','Rejeitado','condições de entrada não cumpridas','letra ainda não pronta','demasiado curto','demasiado longo','rosto não visível','letra alterada','definições abertas','pausa entre piscadelas','falha na entrada','cabeça em movimento','baixa confiança','apenas um olho fechado'],
-  it:['Occhi aperti','Occhi chiusi','Un occhio chiuso','In attesa degli occhi','Battiti','Inserimenti','Rifiutato','condizioni di inserimento non soddisfatte','lettera non ancora pronta','troppo breve','troppo lungo','viso non visibile','lettera cambiata','impostazioni aperte','pausa tra battiti','inserimento non riuscito','testa in movimento','bassa affidabilità','un solo occhio chiuso']
-};
-
 export function createTrackingPanel(app) {
   const toolbar = document.createElement('section');
   toolbar.className = 'tracking-toolbar';
@@ -286,18 +145,20 @@ export function createTrackingPanel(app) {
     const now = performance.now();
     if (!force && now - lastPaint < 100) return;
     lastPaint = now;
+    // Texts live in locales/<id>.json; check rejects catalogs with missing keys.
+    const tr = app.catalog('tracking');
+    if (!tr) return;
     const appState = app.getState();
-    const locale = appState.settings.uiLocale;
-    const text = STRINGS[locale] || STRINGS.ru;
+    const text = tr.base;
     const state = snapshot();
     const values = appState.inputSettings && appState.inputSettings.values ? appState.inputSettings.values : null;
     const source = state.controller.clickSource || (values && values.clickSource) || 'mouth';
-    const modeText = MODE_TEXT[locale] || MODE_TEXT.ru;
+    const modeText = tr.mode;
     const sourceText = modeText[source] || modeText.mouth;
     const active = state.engine.running && !!controller;
     const navState = active && state.controller.navigation ? state.controller.navigation : null;
     const returning = !!navState && navState.phase === 'RETURNING';
-    const navText = NAV_TEXT[locale] || NAV_TEXT.ru;
+    const navText = tr.nav;
     navigationIndicator.hidden = !active;
     blinkIndicator.hidden = !active || source !== 'blink';
     if (active) {
@@ -314,7 +175,7 @@ export function createTrackingPanel(app) {
       }
       if (source === 'blink') {
         const blinkState = state.controller.blinkAvailability || {ready:false, reason:'camera_paused'};
-        const blinkText = BLINK_TEXT[locale] || BLINK_TEXT.ru;
+        const blinkText = tr.blink;
         const reason = blinkState.ready ? null : (blinkState.reason || 'camera_paused');
         const reasons = blinkText.reasons || {};
         const blinkMessage = reason === null ? `${blinkText.prefix}: ${blinkText.ready}` : `${blinkText.prefix}: ${reasons[reason] || reasons.camera_paused || ''}`;
@@ -345,22 +206,22 @@ export function createTrackingPanel(app) {
     const phase = state.controller.phase;
     let message = text[3];
     if (starting) message = text[4];
-    else if (state.controller.lastError === 'EYE_SIGNAL_UNRELIABLE') message = EYE_UNRELIABLE[locale] || EYE_UNRELIABLE.ru;
-    else if (state.controller.lastError) message = CONTROL_ERROR[locale] || CONTROL_ERROR.ru;
+    else if (state.controller.lastError === 'EYE_SIGNAL_UNRELIABLE') message = tr.eyeUnreliable;
+    else if (state.controller.lastError) message = tr.controlError;
     else if (errorCode || state.engine.lastErrorCode) message = text[10];
     else if (state.engine.running) {
       if (phase === 'FACE_LOST') message = text[7];
       else if (phase === 'LOW_CONFIDENCE') message = text[8];
-      else if (phase === 'EYE_SIGNAL_UNRELIABLE') message = EYE_UNRELIABLE[locale] || EYE_UNRELIABLE.ru;
-      else if (phase === 'EYE_REFERENCE') message = EYE_REFERENCE[locale] || EYE_REFERENCE.ru;
-      else if (phase === 'RETURN_CENTER') message = RETURN_CENTER[locale] || RETURN_CENTER.ru;
+      else if (phase === 'EYE_SIGNAL_UNRELIABLE') message = tr.eyeUnreliable;
+      else if (phase === 'EYE_REFERENCE') message = tr.eyeReference;
+      else if (phase === 'RETURN_CENTER') message = tr.returnCenter;
       else if (phase === 'CALIBRATING') message = sourceText.calibrating;
       else if (phase === 'CALIBRATION_REQUIRED' || phase === 'IDLE') message = text[13];
       else if (phase === 'PAUSED') message = text[12];
       else if (phase === 'REACQUIRE') message = sourceText.calibrating;
       else if (source === 'mouth' && state.controller.mouth) {
         const mouth = state.controller.mouth;
-        const feedback = MOUTH_FEEDBACK[locale] || MOUTH_FEEDBACK.ru;
+        const feedback = tr.mouthFeedback;
         message = mouth.ready ? sourceText.ready
           : mouth.reason === 'mouth_unreliable' ? feedback.unreliable
           : mouth.reason === 'gesture_active' || mouth.reason === 'rearm_required' ? feedback.release
@@ -369,18 +230,18 @@ export function createTrackingPanel(app) {
       else message = state.controller.fsm.armed ? sourceText.ready : sourceText.acquiring;
     }
     if (source === 'blink' && (state.engine.running || state.controller.counts?.completedBlinks > 0)) {
-      const labels = EYE_TEXT[locale] || EYE_TEXT.ru;
+      const labels = tr.eye;
       const eyes = state.controller.eyes || {};
       const counts = state.controller.counts || {};
       const eyeIndex = {OPEN:0,CLOSED:1,ASYMMETRIC:2}[eyes.state] ?? 3;
-      const eyeCaption = eyes.state === 'LOOKING_DOWN' ? (LOOKING_DOWN[locale] || LOOKING_DOWN.ru)
-        : eyes.state === 'UNRELIABLE' ? (EYE_UNRELIABLE[locale] || EYE_UNRELIABLE.ru)
-        : eyes.state === 'TRANSITION' ? (TRANSITION_EYES[locale] || TRANSITION_EYES.ru) : labels[eyeIndex];
+      const eyeCaption = eyes.state === 'LOOKING_DOWN' ? tr.lookingDown
+        : eyes.state === 'UNRELIABLE' ? tr.eyeUnreliable
+        : eyes.state === 'TRANSITION' ? tr.transitionEyes : labels[eyeIndex];
       let detail = `${state.engine.running ? eyeCaption + ' · ' : ''}${labels[4]}: ${counts.completedBlinks || 0} · ${labels[5]}: ${counts.acceptedBlinks || 0}`;
       const last = state.controller.lastBlink;
       if (last && !last.accepted) {
         const index = REJECT_KEYS.indexOf(last.reason);
-        const reason = last.reason === 'head_motion' ? (TURN_SIGNAL[locale] || TURN_SIGNAL.ru)
+        const reason = last.reason === 'head_motion' ? tr.turnSignal
           : index < 0 ? labels[7] : labels[index + 8];
         detail += ` · ${labels[6]}: ${reason}`;
       }
@@ -397,7 +258,7 @@ export function createTrackingPanel(app) {
       }
       const last = mouth.lastAction;
       if (last && last.accepted === false && last.reason) {
-        detail += ` · ${(MOUTH_FEEDBACK[locale] || MOUTH_FEEDBACK.ru).retry}`;
+        detail += ` · ${tr.mouthFeedback.retry}`;
       }
       message += '\n' + detail;
     }

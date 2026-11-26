@@ -1,1 +1,177 @@
-{"title":"Patienten-Tastatur","textRegion":"Texteingabebereich","placeholder":"Text eingeben","backspace":"Rücktaste","clear":"Leeren","keyboard":"Tastatur","numbers":"Zahlen","letters":"Buchstaben","space":"Leertaste","settings":"Einstellungen","close":"Schließen","uiLanguage":"Oberflächensprache","keyboardLayout":"Tastaturbelegung","resourceError":"Die Tastaturressourcen konnten nicht geladen werden. Bitte versuchen Sie es erneut.","storageError":"Die Einstellungen konnten auf diesem Gerät nicht gespeichert werden.","bridgeTitle":"Entwicklerwerkzeuge / lokales MCP","bridgeHelp":"Dieser Bereich verbindet lokale Entwicklerwerkzeuge (MCP). Der Einmalcode stammt aus bridge.cmd; der Bluetooth-Fotoauslöser benötigt ihn nicht. Koppeln Sie den Fotoauslöser in den Bluetooth-Einstellungen des Betriebssystems und weisen Sie ihn unter Eingabequelle zu.","bridgeConnect":"Verbinden","bridgeDisconnect":"Trennen","bridgeCode":"Entwicklercode (aus bridge.cmd)","bridgeConnected":"Verbunden","bridgeDisconnected":"Getrennt","bridgeError":"Die lokale Verbindung ist fehlgeschlagen. Bitte versuchen Sie es erneut.","licenseTitle":"Lizenz","licenseNotice":"Nichtkommerzielle Nutzung unter der Lizenz PolyForm Noncommercial 1.0.0. Kommerzielle Lizenzen sind nur nach Vereinbarung mit dem Autor erhältlich. Komponenten von Drittanbietern behalten ihre eigenen Lizenzen.","licenseLink":"Lizenztext"}
+{
+  "title": "Patienten-Tastatur",
+  "textRegion": "Texteingabebereich",
+  "placeholder": "Text eingeben",
+  "backspace": "Rücktaste",
+  "clear": "Leeren",
+  "keyboard": "Tastatur",
+  "numbers": "Zahlen",
+  "letters": "Buchstaben",
+  "space": "Leertaste",
+  "settings": "Einstellungen",
+  "close": "Schließen",
+  "uiLanguage": "Oberflächensprache",
+  "keyboardLayout": "Tastaturbelegung",
+  "resourceError": "Die Tastaturressourcen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "storageError": "Die Einstellungen konnten auf diesem Gerät nicht gespeichert werden.",
+  "bridgeTitle": "Entwicklerwerkzeuge / lokales MCP",
+  "bridgeHelp": "Dieser Bereich verbindet lokale Entwicklerwerkzeuge (MCP). Der Einmalcode stammt aus bridge.cmd; der Bluetooth-Fotoauslöser benötigt ihn nicht. Koppeln Sie den Fotoauslöser in den Bluetooth-Einstellungen des Betriebssystems und weisen Sie ihn unter Eingabequelle zu.",
+  "bridgeConnect": "Verbinden",
+  "bridgeDisconnect": "Trennen",
+  "bridgeCode": "Entwicklercode (aus bridge.cmd)",
+  "bridgeConnected": "Verbunden",
+  "bridgeDisconnected": "Getrennt",
+  "bridgeError": "Die lokale Verbindung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+  "licenseTitle": "Lizenz",
+  "licenseNotice": "Nichtkommerzielle Nutzung unter der Lizenz PolyForm Noncommercial 1.0.0. Kommerzielle Lizenzen sind nur nach Vereinbarung mit dem Autor erhältlich. Komponenten von Drittanbietern behalten ihre eigenen Lizenzen.",
+  "licenseLink": "Lizenztext",
+  "creditsTitle": "Danksagung",
+  "creditsNotice": "Danke an alle, die dieses Projekt unterstützen. Kontakt über GitHub.",
+  "creditsAuthor": "Autor",
+  "variantKey": "Vorheriges Zeichen ändern (゛ ゜, kleines Kana)",
+  "inputPanel": {
+    "legend": "Eingabequelle",
+    "mouth": "Lippen",
+    "blink": "Blinzeln",
+    "external": "Bluetooth-Fotoauslöser",
+    "mouthHelp": "Lippen spitzen — markierte Taste drücken; Mund weit öffnen — löschen.",
+    "blinkHelp": "Blinzeln — drücken. Mundaktionen sind aus Sicherheitsgründen deaktiviert.",
+    "externalHelp": "Koppeln Sie eine Taste im Betriebssystem und weisen Sie sie hier zu. Die Kamera kann die Auswahl weiterhin per Kopfbewegung steuern.",
+    "bind": "Belegen",
+    "clearBinding": "Belegung löschen",
+    "noBinding": "Nicht belegt",
+    "currentBinding": "Aktuelle Belegung",
+    "bindingListening": "Drücken Sie die gewünschte Taste. Escape oder Tab bricht ab.",
+    "bindingCanceled": "Belegung abgebrochen. Die vorherige Belegung bleibt erhalten.",
+    "bindingTimeout": "Zeitüberschreitung. Die vorherige Belegung bleibt erhalten.",
+    "bindingUnsupported": "Diese Taste kann nicht belegt werden. Drücken Sie eine andere.",
+    "bindingSaved": "Belegung gespeichert.",
+    "bindingError": "Belegung konnte nicht gespeichert werden. Die vorherige bleibt erhalten.",
+    "bindingUntrusted": "Verwenden Sie die Schaltfläche „Belegen“ direkt.",
+    "bindingOnlyExternal": "Belegung ist nur im externen Modus verfügbar.",
+    "storageIssue": "Speicher nicht verfügbar. Einstellungen gelten bis zum Neustart.",
+    "updateError": "Einstellungen konnten nicht angewendet werden. Aktuelle Werte bleiben erhalten.",
+    "unavailable": "Eingabeeinstellungen sind nicht verfügbar."
+  },
+  "headPanel": {
+    "legend": "Kopfsteuerung",
+    "doubleStep": "Doppelter Schritt",
+    "doubleStepHelp": "Eine Kopfdrehung um den unter „Empfindlichkeit“ eingestellten Winkel für den doppelten Schritt verschiebt die Auswahl in einer Bewegung um zwei Tasten. Es gibt keine automatische Wiederholung.",
+    "unavailable": "Einstellungen der Kopfsteuerung sind nicht verfügbar."
+  },
+  "tuning": {
+    "summary": "Empfindlichkeit",
+    "headLabel": "Kopfdrehung",
+    "headHelp": "Kleinere Werte erfordern weniger Kopfbewegung zum Auslösen.",
+    "delayLabel": "Zeit für die Kopfrückkehr",
+    "delayHelp": "Pause nach einem Schritt. Kehren Sie in eine bequeme Haltung zurück; halten Sie den Kopf nach der Pause still, bis die Navigation freigegeben wird.",
+    "strictLabel": "Blinzelstrenge",
+    "strictHelp": "Weiter rechts — ein vollständigeres Schließen der Augenlider ist nötig",
+    "invertLabel": "Links/rechts umkehren",
+    "invertHelp": "Wählt eine Linksdrehung die rechte Taste, schalten Sie diese Option um.",
+    "doubleStepAngleLabel": "Doppelt seitlich",
+    "doubleStepVerticalAngleLabel": "Doppelt vertikal",
+    "doubleStepVerticalAngleHelp": "Eine Kopfneigung nach oben oder unten um diesen Winkel verschiebt die Auswahl in einer Bewegung um zwei Tasten. Es gibt keine automatische Wiederholung.",
+    "doubleStepAngleHelp": "Unabhängiger Winkel: Eine Kopfbewegung verschiebt die Auswahl um zwei Tasten. Keine automatische Wiederholung.",
+    "reset": "Zurücksetzen",
+    "unitDeg": "°",
+    "unitMs": "ms",
+    "unitPercent": "%",
+    "storageWarning": "Speicher nicht verfügbar. Einstellungen gelten bis zum Neustart.",
+    "error": "Einstellungen konnten nicht angewendet werden. Aktuelle Werte bleiben erhalten.",
+    "unavailable": "Einstellungen sind nicht verfügbar."
+  },
+  "tracking": {
+    "base": [
+      "Kamera",
+      "Stoppen",
+      "Neutrale Kopfhaltung",
+      "Kamera aus",
+      "Kamera startet…",
+      "Blicken Sie bequem auf die Tastatur. Halten Sie den Kopf kurz ruhig.",
+      "Bewegen Sie den Kopf nach rechts, links, oben oder unten. Blinzeln zum Drücken.",
+      "Gesicht nicht sichtbar — Eingabe pausiert",
+      "Geringe Sicherheit — Eingabe pausiert",
+      "Blinzeln Sie, um die markierte Taste einmal zu drücken.",
+      "Kamera- oder Modellfehler. Erneut starten",
+      "Kamera über die Schaltfläche dieser Seite starten",
+      "Pausiert",
+      "Neutrale Kopfhaltung kalibrieren"
+    ],
+    "controlError": "Tastensteuerung fehlgeschlagen. Neutrale Kopfhaltung neu kalibrieren.",
+    "transitionEyes": "Augenzustand wird geprüft",
+    "eyeUnreliable": "Augensignal unzuverlässig — Eingabe pausiert",
+    "returnCenter": "Kehren Sie näher zur anfänglichen bequemen Kopfhaltung zurück",
+    "turnSignal": "Augensignal während der Drehung mehrdeutig",
+    "eyeReference": "Augenprüfung in dieser Haltung. Augen normal offen halten.",
+    "lookingDown": "Blick nach unten",
+    "nav": {
+      "ready": "Kopf in Neutralstellung — Umschalten verfügbar",
+      "locked": "Kopf zurückführen — Umschalten blockiert",
+      "hold": "Bequeme Haltung halten",
+      "remaining": "noch {seconds} s"
+    },
+    "blink": {
+      "prefix": "Blinzeln",
+      "ready": "bereit",
+      "reasons": {
+        "camera_paused": "Kamera pausiert",
+        "face_lost": "Gesicht nicht sichtbar",
+        "eye_reference": "Augenreferenzprüfung",
+        "eyes_unreliable": "Augensignal unzuverlässig",
+        "head_motion": "Kopf bewegt sich",
+        "eye_posture": "Augenhaltung",
+        "closed": "Augen geschlossen",
+        "modal_open": "Einstellungen offen"
+      }
+    },
+    "mode": {
+      "mouth": {
+        "ready": "Lippen: Lippen spitzen — drücken, Mund weit öffnen — löschen.",
+        "acquiring": "Halten Sie das Gesicht ruhig und die Lippen entspannt.",
+        "calibrating": "Blicken Sie auf die Tastatur. Halten Sie Kopf und Gesicht ruhig.",
+        "counters": {
+          "clicks": "Drücken",
+          "deletes": "Löschen",
+          "rejected": "Abgelehnt"
+        }
+      },
+      "blink": {
+        "ready": "Blinzeln: blinzeln Sie, um die markierte Taste zu drücken.",
+        "acquiring": "Halten Sie die Augen normal offen.",
+        "calibrating": "Blicken Sie auf die Tastatur. Halten Sie den Kopf ruhig und die Augen normal offen."
+      },
+      "external": {
+        "ready": "Externe Taste: Drücken Sie die zugewiesene Taste. Die Kamera kann die Auswahl weiterhin per Kopfbewegung steuern.",
+        "acquiring": "Drücken Sie die zugewiesene externe Taste oder wählen Sie mit dem Kopf.",
+        "calibrating": "Blicken Sie auf die Tastatur. Halten Sie den Kopf ruhig; die externe Taste funktioniert separat."
+      }
+    },
+    "mouthFeedback": {
+      "release": "Entspannen Sie die Lippen, um die Geste abzuschließen.",
+      "unreliable": "Achten Sie darauf, dass die Kamera Ihren Mund sehen kann.",
+      "retry": "Aktion nicht übernommen. Wiederholen Sie die Geste."
+    },
+    "eye": [
+      "Augen offen",
+      "Augen geschlossen",
+      "Ein Auge geschlossen",
+      "Warte auf Augen",
+      "Blinzler",
+      "Eingaben",
+      "Abgelehnt",
+      "Eingabebedingungen nicht erfüllt",
+      "Buchstabe noch nicht bereit",
+      "zu kurz",
+      "zu lang",
+      "Gesicht nicht sichtbar",
+      "Buchstabe geändert",
+      "Einstellungen offen",
+      "Pause zwischen Blinzlern",
+      "Eingabe fehlgeschlagen",
+      "Kopf bewegt sich",
+      "geringe Sicherheit",
+      "nur ein Auge geschlossen"
+    ]
+  }
+}

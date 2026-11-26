@@ -2,14 +2,14 @@
 const CACHE_PREFIX = `keyboard-pwa:${self.registration.scope}:`;
 const LEGACY_CACHE_PREFIX = `russian-keyboard:${self.registration.scope}:`;
 const CACHE_NAME = `${CACHE_PREFIX}head-blink-v1-__BUILD_ID__`;
-const LANGUAGES = ['ru', 'uk', 'en', 'de', 'es', 'pt', 'it'];
+const LANGUAGES = ['ru', 'uk', 'en', 'de', 'es', 'pt', 'it', 'fr', 'pl', 'tr', 'nl', 'id', 'sv', 'cs', 'ro', 'el', 'ar', 'he', 'ko', 'ja'];
 const APP_FILES = [
   './', './index.html', './manifest.webmanifest', './apple-touch-icon.png',
   './LICENSE.txt', './vendor/mediapipe/LICENSE', './models/LICENSE',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './src/app.js', './src/styles.css', './src/bridge-client.js',
   './src/input-preferences.js',
-  './src/navigation.js',
+  './src/navigation.js', './src/hangul.js',
   './src/input-panel.js', './src/external-click.js',
   './src/tracking/engine.js', './src/tracking/controller.js', './src/tracking/panel.js',
   './src/tracking/eye-geometry.js',

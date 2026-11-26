@@ -105,7 +105,7 @@ button {
   flex: 0 0 auto;
   width: 0.08em;
   height: 0.82em;
-  margin-left: 0.06em;
+  margin-inline-start: 0.06em;
   background: currentColor;
   animation: text-caret-blink 1s steps(1, end) infinite;
 }
@@ -189,6 +189,8 @@ button {
 
 #numbersKeyboard {
   min-height: 0;
+  /* Digits keep 1…0 order even in a right-to-left interface. */
+  direction: ltr;
   display: grid;
   grid-template-columns: repeat(10, minmax(0, 1fr));
   gap: var(--gap);
@@ -197,7 +199,8 @@ button {
 #lettersKeyboard {
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Layout JSON may widen the grid, e.g. 10 columns for Japanese kana. */
+  grid-template-columns: repeat(var(--letter-columns, 6), minmax(0, 1fr));
   grid-auto-rows: minmax(0, 1fr);
   gap: var(--gap);
   overflow: hidden;
@@ -229,6 +232,13 @@ button {
 
 .letter-key {
   font-size: clamp(28px, 5.4vmin, 76px);
+}
+
+/* Cycles the last typed character (Japanese ゛ ゜ and small kana). */
+.variant-key {
+  background: var(--control-bg);
+  font-size: clamp(18px, 3.4vmin, 44px);
+  white-space: nowrap;
 }
 
 .number-key {
@@ -385,6 +395,14 @@ button {
   cursor: pointer;
 }
 
+.credits-list {
+  margin: 0;
+  padding-inline-start: 1.2em;
+  display: grid;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
 #bridgeStatus {
   min-height: 1.2em;
   margin: 0;
@@ -454,7 +472,10 @@ button {
 @supports (font-size: 1cqh) {
   #lettersKeyboard, #numbersKeyboard { container-type: size; }
   #lettersKeyboard .letter-key {
-    font-size: min(11cqw, calc(75cqh / var(--letter-rows, 6)), 84px);
+    font-size: min(calc(66cqw / var(--letter-columns, 6)), calc(75cqh / var(--letter-rows, 6)), 84px);
+  }
+  #lettersKeyboard .variant-key {
+    font-size: min(calc(30cqw / var(--letter-columns, 6)), calc(44cqh / var(--letter-rows, 6)), 48px);
   }
   #numbersKeyboard .number-key {
     font-size: min(6cqw, 75cqh, 62px);

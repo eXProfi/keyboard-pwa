@@ -2,15 +2,28 @@
 import {TRACKING_DEFAULTS,readTrackingPreferences,writeTrackingPreferences,validateTrackingPreferences} from './tracking/preferences.js';
 import {INPUT_DEFAULTS,readInputPreferences,writeInputPreferences,validateInputPreferences} from './input-preferences.js';
 import {pickMoveTarget,isSpaceId,oppositeDirection,getTargetCenter} from './navigation.js';
+import {composeHangul} from './hangul.js';
 
 /*
   Owner state and command dispatch for the localized keyboard UI.
   All UI and MCP changes go through app.dispatch so behavior is identical.
 */
 
-const LOCALE_IDS = Object.freeze(['ru','uk','en','de','es','pt','it']);
-const NATIVE_NAMES = Object.freeze({ru:'Русский',uk:'Українська',en:'English',de:'Deutsch',es:'Español',pt:'Português',it:'Italiano'});
-const LOCALE_KEYS = Object.freeze(['title','textRegion','placeholder','backspace','clear','keyboard','numbers','letters','space','settings','close','uiLanguage','keyboardLayout','resourceError','storageError','bridgeTitle','bridgeHelp','bridgeConnect','bridgeDisconnect','bridgeCode','bridgeConnected','bridgeDisconnected','bridgeError','licenseTitle','licenseNotice','licenseLink']);
+// One list owns every supported UI language and keyboard layout. Adding a
+// language means adding locales/<id>.json, layouts/<id>.json and the id here
+// (plus the service worker and MCP enums, which are checked by tests).
+const LOCALE_IDS = Object.freeze(['ru','uk','en','de','es','pt','it','fr','pl','tr','nl','id','sv','cs','ro','el','ar','he','ko','ja']);
+const NATIVE_NAMES = Object.freeze({
+  ru:'Русский',uk:'Українська',en:'English',de:'Deutsch',es:'Español',pt:'Português',it:'Italiano',
+  fr:'Français',pl:'Polski',tr:'Türkçe',nl:'Nederlands',id:'Bahasa Indonesia',sv:'Svenska',cs:'Čeština',
+  ro:'Română',el:'Ελληνικά',ar:'العربية',he:'עברית',ko:'한국어',ja:'日本語'
+});
+// Interface text direction. The typed-text direction comes from the layout.
+const RTL_LOCALES = Object.freeze(['ar','he']);
+const LOCALE_KEYS = Object.freeze(['title','textRegion','placeholder','backspace','clear','keyboard','numbers','letters','space','settings','close','uiLanguage','keyboardLayout','resourceError','storageError','bridgeTitle','bridgeHelp','bridgeConnect','bridgeDisconnect','bridgeCode','bridgeConnected','bridgeDisconnected','bridgeError','licenseTitle','licenseNotice','licenseLink','creditsTitle','creditsNotice','creditsAuthor','variantKey']);
+// Nested catalogs read by the lazily loaded input/tracking panels.
+const LOCALE_SECTIONS = Object.freeze(['inputPanel','headPanel','tuning','tracking']);
+const LAYOUT_KEYS = Object.freeze(['id','name','letters','columns','direction','variants','compose']);
 const DEFAULT_SETTINGS = Object.freeze({schemaVersion:1,uiLocale:'ru',keyboardLayoutId:'ru'});
 const STORAGE_KEY = 'keyboardApp.settings.v1';
 const MAX_DIAGNOSTICS = 80;
@@ -208,40 +221,99 @@ function validateSettings(value) {
   return {schemaVersion:1,uiLocale:value.uiLocale,keyboardLayoutId:value.keyboardLayoutId};
 }
 
+// Panel catalogs are trees of non-empty strings. The exact key shape of every
+// catalog is compared with ru.json by tests/test_project.py during check.
+function freezeTextTree(value, depth) {
+  if (typeof value === 'string') {
+    if (value.trim().length === 0) throw publicError('INVALID_LOCALE');
+    return value;
+  }
+  if (depth > 4 || value === null || typeof value !== 'object') throw publicError('INVALID_LOCALE');
+  if (Array.isArray(value)) {
+    if (value.length === 0) throw publicError('INVALID_LOCALE');
+    return Object.freeze(value.map(function (item) { return freezeTextTree(item, depth + 1); }));
+  }
+  const copy = {};
+  for (const key of Object.keys(value)) copy[key] = freezeTextTree(value[key], depth + 1);
+  if (Object.keys(copy).length === 0) throw publicError('INVALID_LOCALE');
+  return Object.freeze(copy);
+}
+
 function validateLocaleData(value, id) {
   if (!isPlainObject(value)) throw publicError('INVALID_LOCALE');
   const keys = Object.keys(value);
-  if (keys.length !== LOCALE_KEYS.length) throw publicError('INVALID_LOCALE');
+  if (keys.length !== LOCALE_KEYS.length + LOCALE_SECTIONS.length) throw publicError('INVALID_LOCALE');
   for (const key of LOCALE_KEYS) {
     if (!Object.prototype.hasOwnProperty.call(value, key)) throw publicError('INVALID_LOCALE');
     if (typeof value[key] !== 'string' || value[key].trim().length === 0) throw publicError('INVALID_LOCALE');
   }
+  for (const key of LOCALE_SECTIONS) {
+    if (!isPlainObject(value[key])) throw publicError('INVALID_LOCALE');
+  }
   for (const key of keys) {
-    if (LOCALE_KEYS.indexOf(key) === -1) throw publicError('INVALID_LOCALE');
+    if (LOCALE_KEYS.indexOf(key) === -1 && LOCALE_SECTIONS.indexOf(key) === -1) throw publicError('INVALID_LOCALE');
   }
   if (LOCALE_IDS.indexOf(id) === -1) throw publicError('INVALID_LOCALE');
   const copy = {};
   for (const key of LOCALE_KEYS) copy[key] = value[key];
+  for (const key of LOCALE_SECTIONS) copy[key] = freezeTextTree(value[key], 0);
   return Object.freeze(copy);
+}
+
+function validateLayoutLetter(letter) {
+  if (typeof letter !== 'string' || letter.trim().length === 0) throw publicError('INVALID_LAYOUT');
+  if (!isSingleGrapheme(letter)) throw publicError('INVALID_LAYOUT');
+  return letter;
+}
+
+// Optional layout fields keep every character one press away:
+//   columns   - grid width for large alphabets (Japanese kana uses 10);
+//   direction - "rtl" for Arabic and Hebrew typed text and key order;
+//   variants  - one key that cycles the last typed character through a group
+//               (Japanese か→が, は→ば→ぱ, つ→っ→づ), so no sub-level is needed;
+//   compose   - "hangul" joins Korean jamo into syllables as they are typed.
+function validateLayoutVariants(value) {
+  if (!isPlainObject(value) || Object.keys(value).length !== 2 || !Array.isArray(value.cycles) || value.cycles.length === 0) throw publicError('INVALID_LAYOUT');
+  if (typeof value.label !== 'string' || value.label.trim().length === 0 || value.label.length > 8) throw publicError('INVALID_LAYOUT');
+  const seen = new Set();
+  const next = new Map();
+  for (const cycle of value.cycles) {
+    if (!Array.isArray(cycle) || cycle.length < 2) throw publicError('INVALID_LAYOUT');
+    cycle.forEach(function (character, index) {
+      validateLayoutLetter(character);
+      if (seen.has(character)) throw publicError('INVALID_LAYOUT');
+      seen.add(character);
+      next.set(character, cycle[(index + 1) % cycle.length]);
+    });
+  }
+  return Object.freeze({label:value.label,next:next});
 }
 
 function validateLayoutData(value, expectedId) {
   if (!isPlainObject(value)) throw publicError('INVALID_LAYOUT');
   const keys = Object.keys(value);
-  if (keys.length !== 3 || keys.indexOf('id') === -1 || keys.indexOf('name') === -1 || keys.indexOf('letters') === -1) throw publicError('INVALID_LAYOUT');
+  for (const key of keys) {
+    if (LAYOUT_KEYS.indexOf(key) === -1) throw publicError('INVALID_LAYOUT');
+  }
   if (typeof value.id !== 'string' || value.id !== expectedId || LOCALE_IDS.indexOf(value.id) === -1) throw publicError('INVALID_LAYOUT');
   if (typeof value.name !== 'string' || value.name.trim().length === 0) throw publicError('INVALID_LAYOUT');
-  if (!Array.isArray(value.letters) || value.letters.length === 0) throw publicError('INVALID_LAYOUT');
+  if (!Array.isArray(value.letters) || value.letters.length === 0 || value.letters.length > 80) throw publicError('INVALID_LAYOUT');
   const seen = new Set();
   const letters = [];
   for (const letter of value.letters) {
-    if (typeof letter !== 'string' || letter.trim().length === 0) throw publicError('INVALID_LAYOUT');
-    if (!isSingleGrapheme(letter)) throw publicError('INVALID_LAYOUT');
+    validateLayoutLetter(letter);
     if (seen.has(letter)) throw publicError('INVALID_LAYOUT');
     seen.add(letter);
     letters.push(letter);
   }
-  return Object.freeze({id:value.id,name:value.name,letters:Object.freeze(letters)});
+  const columns = value.columns === undefined ? 6 : value.columns;
+  if (!Number.isInteger(columns) || columns < 4 || columns > 12) throw publicError('INVALID_LAYOUT');
+  const direction = value.direction === undefined ? 'ltr' : value.direction;
+  if (direction !== 'ltr' && direction !== 'rtl') throw publicError('INVALID_LAYOUT');
+  const variants = value.variants === undefined ? null : validateLayoutVariants(value.variants);
+  const compose = value.compose === undefined ? null : value.compose;
+  if (compose !== null && compose !== 'hangul') throw publicError('INVALID_LAYOUT');
+  return Object.freeze({id:value.id,name:value.name,letters:Object.freeze(letters),columns:columns,direction:direction,variants:variants,compose:compose});
 }
 
 function readStoredSettings() {
@@ -332,6 +404,9 @@ function cacheDom() {
   dom.licenseTitle = document.getElementById('licenseTitle');
   dom.licenseNotice = document.getElementById('licenseNotice');
   dom.licenseLink = document.getElementById('licenseLink');
+  dom.creditsTitle = document.getElementById('creditsTitle');
+  dom.creditsNotice = document.getElementById('creditsNotice');
+  dom.creditsAuthorLabels = document.querySelectorAll('[data-credit-role="author"]');
   if (dom.backspaceButton) dom.backspaceButton.dataset.actionId = 'backspace';
   if (dom.clearButton) dom.clearButton.dataset.actionId = 'clear';
   if (dom.spaceButton) dom.spaceButton.dataset.actionId = 'space';
@@ -367,10 +442,16 @@ function renderSettingsValues() {
 
 function renderText() {
   if (!dom.textOutput) return;
+  const rtl = !!activeLayout && activeLayout.direction === 'rtl';
   dom.textValue.textContent = state.text;
+  // The typed text follows the keyboard layout, not the interface language,
+  // so Arabic typed with an English UI still reads right to left.
+  dom.textOutput.dir = rtl ? 'rtl' : 'ltr';
   dom.textOutput.classList.toggle('empty', state.text.length === 0);
   requestAnimationFrame(function () {
-    if (dom.textOutput) dom.textOutput.scrollLeft = dom.textOutput.scrollWidth;
+    if (!dom.textOutput) return;
+    // In a right-to-left scroller the newest text is at the left edge.
+    dom.textOutput.scrollLeft = getComputedStyle(dom.textOutput).direction === 'rtl' ? -dom.textOutput.scrollWidth : dom.textOutput.scrollWidth;
   });
 }
 
@@ -400,11 +481,19 @@ function renderKeyboard() {
     dom.numbersKeyboard.appendChild(numberFragment);
   }
   if (dom.lettersKeyboard) {
-    dom.lettersKeyboard.style.setProperty('--letter-rows', String(Math.ceil((activeLayout.letters.length + 2) / 6)));
+    const keyCount = activeLayout.letters.length + 2 + (activeLayout.variants ? 1 : 0);
+    dom.lettersKeyboard.style.setProperty('--letter-columns', String(activeLayout.columns));
+    dom.lettersKeyboard.style.setProperty('--letter-rows', String(Math.ceil(keyCount / activeLayout.columns)));
+    dom.lettersKeyboard.dir = activeLayout.direction;
+    dom.lettersKeyboard.lang = activeLayout.id;
     const letterFragment = document.createDocumentFragment();
     activeLayout.letters.forEach(function (letter, index) {
       letterFragment.appendChild(createKeyButton(letter, 'letter:' + index, 'letter-key', letterLabel + ': ' + letter));
     });
+    if (activeLayout.variants) {
+      const variantLabel = t ? t.variantKey : 'Variant';
+      letterFragment.appendChild(createKeyButton(activeLayout.variants.label, 'variant', 'letter-key variant-key', variantLabel));
+    }
     letterFragment.appendChild(createKeyButton('.', 'period', 'letter-key punctuation-key', '.'));
     letterFragment.appendChild(createKeyButton(',', 'comma', 'letter-key punctuation-key', ','));
     dom.lettersKeyboard.appendChild(letterFragment);
@@ -416,6 +505,7 @@ function renderStaticText() {
   const t = activeLocale;
   document.title = t.title;
   document.documentElement.lang = state.settings.uiLocale;
+  document.documentElement.dir = RTL_LOCALES.indexOf(state.settings.uiLocale) === -1 ? 'ltr' : 'rtl';
   if (dom.textBar) dom.textBar.setAttribute('aria-label', t.textRegion);
   if (dom.textOutput) {
     dom.textOutput.dataset.placeholder = t.placeholder;
@@ -478,6 +568,11 @@ function renderStaticText() {
   if (dom.licenseTitle) dom.licenseTitle.textContent = t.licenseTitle;
   if (dom.licenseNotice) dom.licenseNotice.textContent = t.licenseNotice;
   if (dom.licenseLink) dom.licenseLink.textContent = t.licenseLink;
+  if (dom.creditsTitle) dom.creditsTitle.textContent = t.creditsTitle;
+  if (dom.creditsNotice) dom.creditsNotice.textContent = t.creditsNotice;
+  if (dom.creditsAuthorLabels) {
+    for (const label of dom.creditsAuthorLabels) label.textContent = t.creditsAuthor;
+  }
 }
 
 function renderStatus() {
@@ -808,9 +903,26 @@ function moveSelection(directionValue, stepsValue) {
 }
 
 function appendCharacter(character) {
-  state.text += character;
+  // Korean jamo join the previous syllable; every other layout appends as is.
+  const isLetter = !!activeLayout && activeLayout.letters.indexOf(character) !== -1;
+  state.text = isLetter && activeLayout.compose === 'hangul' ? composeHangul(state.text, character) : state.text + character;
   state.textRevision += 1;
   renderText();
+}
+
+function cycleLastVariant() {
+  if (state.activeSurface !== 'keyboard') throw publicError('MODAL_BLOCKED');
+  if (!activeLayout || !activeLayout.variants) throw publicError('UNKNOWN_TARGET');
+  const parts = splitGraphemes(state.text);
+  const last = parts.length ? parts[parts.length - 1] : '';
+  const replacement = activeLayout.variants.next.get(last);
+  // A character without variants stays unchanged; the press is not an error.
+  if (replacement === undefined) return {ok:true,changed:false};
+  parts[parts.length - 1] = replacement;
+  state.text = parts.join('');
+  state.textRevision += 1;
+  renderText();
+  return {ok:true,changed:true};
 }
 
 function backspaceText() {
@@ -921,6 +1033,7 @@ function activateTarget(id) {
     appendCharacter(textValue);
     return {action:'append',id:id};
   }
+  if (id === 'variant') return {action:'variant',result:cycleLastVariant()};
   if (id === 'backspace') return {action:'backspace',result:backspaceText()};
   if (id === 'clear') return {action:'clear',result:clearText()};
   if (id === 'settings') return {action:'settings',result:openSettings()};
@@ -1357,6 +1470,11 @@ async function boot() {
 export const app = {
   translate: function (key) {
     return activeLocale && Object.hasOwn(activeLocale, key) ? activeLocale[key] : '';
+  },
+  // Frozen panel catalog (inputPanel, headPanel, tuning, tracking) of the
+  // current interface language; panels re-read it on 'keyboardlocalize'.
+  catalog: function (section) {
+    return activeLocale && LOCALE_SECTIONS.indexOf(section) !== -1 ? activeLocale[section] : null;
   },
   dispatch: function (name, args, event) {
     return dispatchCommand(name, args, event);

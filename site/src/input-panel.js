@@ -1,172 +1,5 @@
 import {validateInputPreferences} from './input-preferences.js';
 
-const STRINGS = {
-  ru: {
-    legend:'Источник нажатия', mouth:'Губы', blink:'Моргание', external:'Bluetooth фото-кнопка',
-    mouthHelp:'Поцелуй губами — нажатие выделенной клавиши; широко откройте рот — удаление.',
-    blinkHelp:'Моргание — нажатие. Действия губами отключены для безопасности.',
-    externalHelp:'Сопрягите кнопку в системе, затем назначьте её здесь. Камера может по-прежнему двигать выделение головой.',
-    bind:'Назначить', clearBinding:'Очистить привязку', noBinding:'Не назначено', currentBinding:'Текущая привязка',
-    bindingListening:'Нажмите нужную клавишу. Escape или Tab отменяет.',
-    bindingCanceled:'Назначение отменено. Прежняя привязка сохранена.',
-    bindingTimeout:'Время назначения истекло. Прежняя привязка сохранена.',
-    bindingUnsupported:'Эту клавишу назначить нельзя. Нажмите другую.',
-    bindingSaved:'Привязка сохранена.',
-    bindingError:'Не удалось сохранить привязку. Прежняя привязка сохранена.',
-    bindingUntrusted:'Нажмите кнопку «Назначить» вручную.',
-    bindingOnlyExternal:'Привязка доступна только во внешнем режиме.',
-    storageIssue:'Хранилище недоступно. Настройки действуют до перезапуска.',
-    updateError:'Не удалось применить настройки. Текущие значения сохранены.',
-    unavailable:'Настройки ввода недоступны.'
-  },
-  uk: {
-    legend:'Джерело натискання', mouth:'Губи', blink:'Моргання', external:'Bluetooth фото-кнопка',
-    mouthHelp:'Поцілунок губами — натискання виділеної клавіші; широко відкрийте рот — видалення.',
-    blinkHelp:'Моргання — натискання. Дії губами вимкнено для безпеки.',
-    externalHelp:'Сполучіть кнопку в системі, потім призначте її тут. Камера може й далі рухати виділення головою.',
-    bind:'Призначити', clearBinding:'Очистити прив’язку', noBinding:'Не призначено', currentBinding:'Поточна прив’язка',
-    bindingListening:'Натисніть потрібну клавішу. Escape або Tab скасовує.',
-    bindingCanceled:'Призначення скасовано. Попередню прив’язку збережено.',
-    bindingTimeout:'Час призначення минув. Попередню прив’язку збережено.',
-    bindingUnsupported:'Цю клавішу призначити не можна. Натисніть іншу.',
-    bindingSaved:'Прив’язку збережено.',
-    bindingError:'Не вдалося зберегти прив’язку. Попередню прив’язку збережено.',
-    bindingUntrusted:'Натисніть кнопку «Призначити» вручну.',
-    bindingOnlyExternal:'Прив’язка доступна лише в зовнішньому режимі.',
-    storageIssue:'Сховище недоступне. Налаштування діють до перезапуску.',
-    updateError:'Не вдалося застосувати налаштування. Поточні значення збережено.',
-    unavailable:'Налаштування введення недоступні.'
-  },
-  en: {
-    legend:'Input source', mouth:'Lips', blink:'Blink', external:'Bluetooth camera button',
-    mouthHelp:'Pucker to press the selected key; open your mouth wide to delete.',
-    blinkHelp:'Blink to press. Mouth actions are disabled for safety.',
-    externalHelp:'Pair a button in the operating system, then bind it here. The camera can still move the selection with your head.',
-    bind:'Bind', clearBinding:'Clear binding', noBinding:'Not bound', currentBinding:'Current binding',
-    bindingListening:'Press the desired key. Escape or Tab cancels.',
-    bindingCanceled:'Binding canceled. The previous binding was kept.',
-    bindingTimeout:'Binding timed out. The previous binding was kept.',
-    bindingUnsupported:'This key cannot be bound. Press another key.',
-    bindingSaved:'Binding saved.',
-    bindingError:'Could not save the binding. The previous binding was kept.',
-    bindingUntrusted:'Use the Bind button directly.',
-    bindingOnlyExternal:'Binding is available only in external mode.',
-    storageIssue:'Storage is unavailable. Settings last until restart.',
-    updateError:'Could not apply settings. Current values were kept.',
-    unavailable:'Input settings are unavailable.'
-  },
-  de: {
-    legend:'Eingabequelle', mouth:'Lippen', blink:'Blinzeln', external:'Bluetooth-Fotoauslöser',
-    mouthHelp:'Lippen spitzen — markierte Taste drücken; Mund weit öffnen — löschen.',
-    blinkHelp:'Blinzeln — drücken. Mundaktionen sind aus Sicherheitsgründen deaktiviert.',
-    externalHelp:'Koppeln Sie eine Taste im Betriebssystem und weisen Sie sie hier zu. Die Kamera kann die Auswahl weiterhin per Kopfbewegung steuern.',
-    bind:'Belegen', clearBinding:'Belegung löschen', noBinding:'Nicht belegt', currentBinding:'Aktuelle Belegung',
-    bindingListening:'Drücken Sie die gewünschte Taste. Escape oder Tab bricht ab.',
-    bindingCanceled:'Belegung abgebrochen. Die vorherige Belegung bleibt erhalten.',
-    bindingTimeout:'Zeitüberschreitung. Die vorherige Belegung bleibt erhalten.',
-    bindingUnsupported:'Diese Taste kann nicht belegt werden. Drücken Sie eine andere.',
-    bindingSaved:'Belegung gespeichert.',
-    bindingError:'Belegung konnte nicht gespeichert werden. Die vorherige bleibt erhalten.',
-    bindingUntrusted:'Verwenden Sie die Schaltfläche „Belegen“ direkt.',
-    bindingOnlyExternal:'Belegung ist nur im externen Modus verfügbar.',
-    storageIssue:'Speicher nicht verfügbar. Einstellungen gelten bis zum Neustart.',
-    updateError:'Einstellungen konnten nicht angewendet werden. Aktuelle Werte bleiben erhalten.',
-    unavailable:'Eingabeeinstellungen sind nicht verfügbar.'
-  },
-  es: {
-    legend:'Fuente de entrada', mouth:'Labios', blink:'Parpadeo', external:'Botón de foto Bluetooth',
-    mouthHelp:'Frunza los labios para pulsar la tecla seleccionada; abra mucho la boca para borrar.',
-    blinkHelp:'Parpadee para pulsar. Las acciones con la boca están desactivadas por seguridad.',
-    externalHelp:'Empareje un botón en el sistema operativo y asígnelo aquí. La cámara aún puede mover la selección con la cabeza.',
-    bind:'Asignar', clearBinding:'Borrar asignación', noBinding:'Sin asignar', currentBinding:'Asignación actual',
-    bindingListening:'Pulse la tecla deseada. Escape o Tab cancela.',
-    bindingCanceled:'Asignación cancelada. Se conservó la asignación anterior.',
-    bindingTimeout:'Se agotó el tiempo. Se conservó la asignación anterior.',
-    bindingUnsupported:'Esta tecla no se puede asignar. Pulse otra.',
-    bindingSaved:'Asignación guardada.',
-    bindingError:'No se pudo guardar la asignación. Se conservó la anterior.',
-    bindingUntrusted:'Use el botón «Asignar» directamente.',
-    bindingOnlyExternal:'La asignación solo está disponible en modo externo.',
-    storageIssue:'El almacenamiento no está disponible. Los ajustes duran hasta reiniciar.',
-    updateError:'No se pudieron aplicar los ajustes. Se mantienen los valores actuales.',
-    unavailable:'Los ajustes de entrada no están disponibles.'
-  },
-  pt: {
-    legend:'Fonte de entrada', mouth:'Lábios', blink:'Piscadela', external:'Botão de foto Bluetooth',
-    mouthHelp:'Franza os lábios para premir a tecla selecionada; abra bem a boca para apagar.',
-    blinkHelp:'Pisque para premir. As ações com a boca estão desativadas por segurança.',
-    externalHelp:'Emparelhe um botão no sistema operativo e associe-o aqui. A câmara ainda pode mover a seleção com a cabeça.',
-    bind:'Associar', clearBinding:'Limpar associação', noBinding:'Não associado', currentBinding:'Associação atual',
-    bindingListening:'Prima a tecla pretendida. Escape ou Tab cancela.',
-    bindingCanceled:'Associação cancelada. A associação anterior foi mantida.',
-    bindingTimeout:'Tempo esgotado. A associação anterior foi mantida.',
-    bindingUnsupported:'Esta tecla não pode ser associada. Prima outra.',
-    bindingSaved:'Associação guardada.',
-    bindingError:'Não foi possível guardar a associação. A anterior foi mantida.',
-    bindingUntrusted:'Use o botão «Associar» diretamente.',
-    bindingOnlyExternal:'A associação só está disponível no modo externo.',
-    storageIssue:'O armazenamento não está disponível. As definições duram até reiniciar.',
-    updateError:'Não foi possível aplicar as definições. Os valores atuais foram mantidos.',
-    unavailable:'As definições de entrada não estão disponíveis.'
-  },
-  it: {
-    legend:'Sorgente di input', mouth:'Labbra', blink:'Battito', external:'Pulsante foto Bluetooth',
-    mouthHelp:'Stringi le labbra per premere il tasto selezionato; apri bene la bocca per cancellare.',
-    blinkHelp:'Batti le palpebre per premere. Le azioni con la bocca sono disattivate per sicurezza.',
-    externalHelp:'Accoppia un pulsante nel sistema operativo e assegnalo qui. La fotocamera può ancora muovere la selezione con la testa.',
-    bind:'Assegna', clearBinding:'Cancella associazione', noBinding:'Non associato', currentBinding:'Associazione attuale',
-    bindingListening:'Premi il tasto desiderato. Escape o Tab annulla.',
-    bindingCanceled:'Associazione annullata. L’associazione precedente è stata mantenuta.',
-    bindingTimeout:'Tempo scaduto. L’associazione precedente è stata mantenuta.',
-    bindingUnsupported:'Questo tasto non può essere associato. Premine un altro.',
-    bindingSaved:'Associazione salvata.',
-    bindingError:'Impossibile salvare l’associazione. La precedente è stata mantenuta.',
-    bindingUntrusted:'Usa direttamente il pulsante «Assegna».',
-    bindingOnlyExternal:'L’associazione è disponibile solo in modalità esterna.',
-    storageIssue:'Archiviazione non disponibile. Le impostazioni restano fino al riavvio.',
-    updateError:'Impossibile applicare le impostazioni. I valori attuali sono stati mantenuti.',
-    unavailable:'Le impostazioni di input non sono disponibili.'
-  }
-};
-
-const HEAD_STRINGS = {
-  ru: {
-    legend:'Движение головой', doubleStep:'Двойной шаг',
-    doubleStepHelp:'Поворот головы на угол двойного шага для соответствующего направления, заданный в «Чувствительности», перемещает выделение сразу на две клавиши за одно движение. Автоповтора нет.',
-    unavailable:'Настройки движения головой недоступны.'
-  },
-  uk: {
-    legend:'Рух головою', doubleStep:'Подвійний крок',
-    doubleStepHelp:'Поворот голови на кут подвійного кроку для відповідного напрямку, заданий у «Чутливості», переміщує виділення одразу на дві клавіші за один рух. Автоповтору немає.',
-    unavailable:'Налаштування руху головою недоступні.'
-  },
-  en: {
-    legend:'Head control', doubleStep:'Double step',
-    doubleStepHelp:'Turning your head by the double-step angle set under Sensitivity moves the selection two keys at once in a single motion. It never auto-repeats.',
-    unavailable:'Head control settings are unavailable.'
-  },
-  de: {
-    legend:'Kopfsteuerung', doubleStep:'Doppelter Schritt',
-    doubleStepHelp:'Eine Kopfdrehung um den unter „Empfindlichkeit“ eingestellten Winkel für den doppelten Schritt verschiebt die Auswahl in einer Bewegung um zwei Tasten. Es gibt keine automatische Wiederholung.',
-    unavailable:'Einstellungen der Kopfsteuerung sind nicht verfügbar.'
-  },
-  es: {
-    legend:'Control con la cabeza', doubleStep:'Paso doble',
-    doubleStepHelp:'Girar la cabeza el ángulo del paso doble ajustado en «Sensibilidad» mueve la selección dos teclas de una vez en un solo movimiento. No se repite automáticamente.',
-    unavailable:'Los ajustes de control con la cabeza no están disponibles.'
-  },
-  pt: {
-    legend:'Controlo por cabeça', doubleStep:'Passo duplo',
-    doubleStepHelp:'Virar a cabeça o ângulo do passo duplo definido em «Sensibilidade» move a seleção duas teclas de uma vez num único movimento. Nunca repete automaticamente.',
-    unavailable:'As definições de controlo por cabeça não estão disponíveis.'
-  },
-  it: {
-    legend:'Controllo con la testa', doubleStep:'Passo doppio',
-    doubleStepHelp:'Girare la testa dell’angolo del passo doppio impostato in «Sensibilità» sposta la selezione di due tasti in un solo movimento. Non si ripete automaticamente.',
-    unavailable:'Le impostazioni del controllo con la testa non sono disponibili.'
-  }
-};
-
 const STYLE_ID = 'input-mode-style';
 const STYLE_TEXT = `
   .input-mode-panel {
@@ -459,22 +292,13 @@ export function initInputPanel(app) {
   let statusTone = '';
   let settingsIssue = false;
 
-  function getLocale() {
-    try {
-      const state = app.getState();
-      const locale = state && state.settings && state.settings.uiLocale;
-      return typeof locale === 'string' && Object.hasOwn(STRINGS, locale) ? locale : 'ru';
-    } catch (error) {
-      return 'ru';
-    }
-  }
-
+  // Texts live in locales/<id>.json; check rejects catalogs with missing keys.
   function strings() {
-    return STRINGS[getLocale()] || STRINGS.ru;
+    return app.catalog('inputPanel') || {};
   }
 
   function headStrings() {
-    return HEAD_STRINGS[getLocale()] || HEAD_STRINGS.ru;
+    return app.catalog('headPanel') || {};
   }
 
   function readTrackingSettings() {
