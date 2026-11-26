@@ -16,3 +16,62 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+
+# Project development template
+# Keep the supplied original template without adding its duplicate tree to commits.
+project-template-obsidian-headroom-mcp-Lazy-Engineer-Graphify-Codex-Deepseek-api-mcp-prototype-v7/
+dist/
+target/
+node_modules/
+.venv/
+# Obsidian local workspace state (shared notes remain committed)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+.trash/
+# Optional Obsidian MCP recovery/trash contains prior note contents
+.obsidian-mcp/
+knowledge/.obsidian/
+
+# Optional project-local Headroom workspace/cache/state
+.headroom/
+
+# Ephemeral agent request-epoch checkpoint
+.agent/
+
+# Local Graphify graph, cache, reports and visualizations
+graphify-out/
+
+# Common local OS/editor noise
+.DS_Store
+Thumbs.db
+.codex/profile-prefix.local
+.claude/settings.local.json
+CLAUDE.local.md
+.playwright-mcp/
+playwright-report/
+test-results/
+*.trace.zip
+
+# Python tooling caches
+__pycache__/
+*.py[cod]
+
+# Publication hardening: local, secret and build state (repo-local, no reliance on global gitignore)
+build/
+coverage/
+.vscode/
+.idea/
+*.code-workspace
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.local.json
+*.local.toml
+*.log
+*.dmp
+.pytest_cache/
