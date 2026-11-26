@@ -185,7 +185,24 @@ button {
   border: 1px solid var(--border);
   border-radius: 12px;
 }
-.settings-control svg { width: 32px; height: 32px; pointer-events: none; }
+/* Settings icon (globe, gear, translation, keyboard) from icon-settings.svg.
+   A mask lets the button text colour paint it, as with the old stroke gear;
+   the SVG stays a separate cached file and stays sharp at any size. */
+.settings-icon {
+  width: min(80%, 104px);
+  height: min(72%, 84px);
+  background-color: currentColor;
+  -webkit-mask: url('../icon-settings.svg') center / contain no-repeat;
+  mask: url('../icon-settings.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .settings-icon {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+}
 
 #numbersKeyboard {
   min-height: 0;

@@ -6,7 +6,7 @@ const LANGUAGES = ['ru', 'uk', 'en', 'de', 'es', 'pt', 'it', 'fr', 'pl', 'tr', '
 const APP_FILES = [
   './', './index.html', './manifest.webmanifest', './apple-touch-icon.png',
   './LICENSE.txt', './vendor/mediapipe/LICENSE', './models/LICENSE',
-  './icon-192.png', './icon-512.png', './icon-maskable-512.png',
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png', './icon-settings.svg',
   './src/app.js', './src/styles.css', './src/bridge-client.js',
   './src/input-preferences.js',
   './src/navigation.js', './src/hangul.js', './src/language-picker.js',

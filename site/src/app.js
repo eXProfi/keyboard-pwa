@@ -529,8 +529,7 @@ function renderStaticText() {
     dom.clearButton.title = t.clear;
   }
   if (dom.settingsButton) {
-    // Static SVG keeps the settings control sharp at every patient zoom level.
-    dom.settingsButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="m9 3 1-2h4l1 2 2 1 2-.2 2 3.4-1.2 1.8V12l1.2 1.8-2 3.4-2-.2-2 1-1 2h-4l-1-2-2-1-2 .2-2-3.4L4.2 12V9l-1.2-1.8L5 3.8l2 .2Z"/><circle cx="12" cy="10.5" r="3"/></svg>';
+    // The icon is static markup in index.html (icon-settings.svg via CSS mask).
     dom.settingsButton.setAttribute('aria-label', t.settings);
     dom.settingsButton.title = t.settings;
   }
