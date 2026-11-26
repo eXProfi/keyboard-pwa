@@ -359,9 +359,9 @@ export function initTuningPanel(app) {
     try {
       const state = app.getState();
       const locale = state && state.settings && state.settings.uiLocale;
-      return typeof locale === 'string' ? locale : 'ru';
+      return typeof locale === 'string' ? locale : 'en';
     } catch (error) {
-      return 'ru';
+      return 'en';
     }
   }
 

@@ -339,7 +339,112 @@ button {
   font-size: 17px;
 }
 
-.settings-body select,
+/* Language pickers: English name | native name. A button, not a <select>,
+   because iPad Safari clips select text and options cannot hold columns. */
+.language-picker {
+  position: relative;
+}
+
+.language-trigger,
+.language-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 16px;
+  text-align: start;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.language-trigger {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111111;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Chevron drawn in CSS so the button needs no extra markup. */
+.language-trigger::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  margin: 0 4px 5px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.language-trigger[aria-expanded="true"]::after {
+  margin: 5px 4px 0;
+  transform: rotate(-135deg);
+}
+
+.language-native {
+  color: #3a3a3c;
+}
+
+.language-list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  max-height: min(60dvh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.language-list[hidden] {
+  display: none;
+}
+
+.language-list:focus {
+  outline: none;
+}
+
+.language-option {
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #111111;
+  cursor: pointer;
+}
+
+.language-option.active,
+.language-option:hover {
+  background: var(--control-bg);
+}
+
+.language-option[aria-selected="true"] {
+  background: #0a84ff;
+  color: #ffffff;
+}
+
+.language-option[aria-selected="true"] .language-native {
+  color: inherit;
+}
+
+.language-list:focus .language-option.active {
+  outline: 3px solid #0a84ff;
+  outline-offset: -3px;
+}
+
+.language-list:focus .language-option.active[aria-selected="true"] {
+  outline-color: #003a80;
+}
+
 #bridgeCode {
   width: 100%;
   min-height: 48px;

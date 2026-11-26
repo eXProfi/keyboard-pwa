@@ -1,9 +1,9 @@
 {
   "id": "./",
-  "name": "Русская клавиатура",
-  "short_name": "Клавиатура",
-  "description": "Крупная русская алфавитная клавиатура для iPad",
-  "lang": "ru",
+  "name": "Patient keyboard",
+  "short_name": "Keyboard",
+  "description": "Large one-press on-screen keyboard in 20 languages for iPad",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -9,7 +9,7 @@ const APP_FILES = [
   './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './src/app.js', './src/styles.css', './src/bridge-client.js',
   './src/input-preferences.js',
-  './src/navigation.js', './src/hangul.js',
+  './src/navigation.js', './src/hangul.js', './src/language-picker.js',
   './src/input-panel.js', './src/external-click.js',
   './src/tracking/engine.js', './src/tracking/controller.js', './src/tracking/panel.js',
   './src/tracking/eye-geometry.js',

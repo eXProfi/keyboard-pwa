@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport"
@@ -10,8 +10,8 @@
   <meta name="theme-color" content="#f2f2f7" />
 
   <!-- PWA / iPad Home Screen -->
-  <meta name="application-name" content="Русская клавиатура" />
-  <meta name="apple-mobile-web-app-title" content="Клавиатура" />
+  <meta name="application-name" content="Patient keyboard" />
+  <meta name="apple-mobile-web-app-title" content="Keyboard" />
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
@@ -26,7 +26,7 @@
 <body>
   <main id="app">
 
-    <section class="text-bar" aria-label="Строка набранного текста">
+    <section class="text-bar" aria-label="Text input area">
 
       <div
         id="textOutput"
@@ -39,8 +39,8 @@
         class="top-control"
         type="button"
         data-action-id="backspace"
-        aria-label="Удалить последний символ"
-        title="Удалить последний символ"
+        aria-label="Backspace"
+        title="Backspace"
       >
         ⌫
       </button>
@@ -50,22 +50,22 @@
         class="top-control clear"
         type="button"
         data-action-id="clear"
-        aria-label="Очистить весь текст"
-        title="Очистить весь текст"
+        aria-label="Clear"
+        title="Clear"
       >
-        Очистить
+        Clear
       </button>
 
     </section>
 
     <section
       id="keyboardArea"
-      aria-label="Русская клавиатура"
+      aria-label="Keyboard"
     >
 
       <div
         id="numbersKeyboard"
-        aria-label="Цифры"
+        aria-label="Numbers"
       ></div>
 
       <button
@@ -73,15 +73,15 @@
         class="key space-key upper-space-key"
         type="button"
         data-action-id="space:upper"
-        aria-label="Пробел"
-        title="Пробел"
+        aria-label="Space"
+        title="Space"
       >
-        ПРОБЕЛ
+        SPACE
       </button>
 
       <div
         id="lettersKeyboard"
-        aria-label="Русский алфавит"
+        aria-label="Letters"
       ></div>
 
       <div class="bottom-controls"><button
@@ -89,10 +89,10 @@
         class="key space-key"
         type="button"
         data-action-id="space"
-        aria-label="Пробел"
-        title="Пробел"
+        aria-label="Space"
+        title="Space"
       >
-        ПРОБЕЛ
+        SPACE
       </button>
 
       <button
@@ -119,9 +119,15 @@
       </header>
       <div class="settings-body">
         <label id="uiLanguageLabel" for="uiLocale"></label>
-        <select id="uiLocale" data-action-id="uiLocale"></select>
+        <div class="language-picker">
+          <button id="uiLocale" type="button" class="language-trigger" data-action-id="uiLocale" aria-haspopup="listbox" aria-expanded="false" aria-controls="uiLocaleList" aria-labelledby="uiLanguageLabel uiLocale"></button>
+          <div id="uiLocaleList" class="language-list" role="listbox" tabindex="-1" aria-labelledby="uiLanguageLabel" hidden></div>
+        </div>
         <label id="keyboardLayoutLabel" for="keyboardLayoutId"></label>
-        <select id="keyboardLayoutId" data-action-id="keyboardLayoutId"></select>
+        <div class="language-picker">
+          <button id="keyboardLayoutId" type="button" class="language-trigger" data-action-id="keyboardLayoutId" aria-haspopup="listbox" aria-expanded="false" aria-controls="keyboardLayoutIdList" aria-labelledby="keyboardLayoutLabel keyboardLayoutId"></button>
+          <div id="keyboardLayoutIdList" class="language-list" role="listbox" tabindex="-1" aria-labelledby="keyboardLayoutLabel" hidden></div>
+        </div>
         <p id="settingsStatus" role="status" aria-live="polite" hidden></p>
         <section class="bridge-panel" aria-labelledby="bridgeTitle">
           <h3 id="bridgeTitle"></h3>

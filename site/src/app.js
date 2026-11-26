@@ -3,6 +3,7 @@ import {TRACKING_DEFAULTS,readTrackingPreferences,writeTrackingPreferences,valid
 import {INPUT_DEFAULTS,readInputPreferences,writeInputPreferences,validateInputPreferences} from './input-preferences.js';
 import {pickMoveTarget,isSpaceId,oppositeDirection,getTargetCenter} from './navigation.js';
 import {composeHangul} from './hangul.js';
+import {createLanguagePicker} from './language-picker.js';
 
 /*
   Owner state and command dispatch for the localized keyboard UI.
@@ -18,13 +19,20 @@ const NATIVE_NAMES = Object.freeze({
   fr:'Français',pl:'Polski',tr:'Türkçe',nl:'Nederlands',id:'Bahasa Indonesia',sv:'Svenska',cs:'Čeština',
   ro:'Română',el:'Ελληνικά',ar:'العربية',he:'עברית',ko:'한국어',ja:'日本語'
 });
+// First column of the language pickers; the list is sorted by these names.
+const ENGLISH_NAMES = Object.freeze({
+  ru:'Russian',uk:'Ukrainian',en:'English',de:'German',es:'Spanish',pt:'Portuguese',it:'Italian',
+  fr:'French',pl:'Polish',tr:'Turkish',nl:'Dutch',id:'Indonesian',sv:'Swedish',cs:'Czech',
+  ro:'Romanian',el:'Greek',ar:'Arabic',he:'Hebrew',ko:'Korean',ja:'Japanese'
+});
 // Interface text direction. The typed-text direction comes from the layout.
 const RTL_LOCALES = Object.freeze(['ar','he']);
 const LOCALE_KEYS = Object.freeze(['title','textRegion','placeholder','backspace','clear','keyboard','numbers','letters','space','settings','close','uiLanguage','keyboardLayout','resourceError','storageError','bridgeTitle','bridgeHelp','bridgeConnect','bridgeDisconnect','bridgeCode','bridgeConnected','bridgeDisconnected','bridgeError','licenseTitle','licenseNotice','licenseLink','creditsTitle','creditsNotice','creditsAuthor','variantKey']);
 // Nested catalogs read by the lazily loaded input/tracking panels.
 const LOCALE_SECTIONS = Object.freeze(['inputPanel','headPanel','tuning','tracking']);
 const LAYOUT_KEYS = Object.freeze(['id','name','letters','columns','direction','variants','compose']);
-const DEFAULT_SETTINGS = Object.freeze({schemaVersion:1,uiLocale:'ru',keyboardLayoutId:'ru'});
+// A first visit opens in English; a stored choice always wins.
+const DEFAULT_SETTINGS = Object.freeze({schemaVersion:1,uiLocale:'en',keyboardLayoutId:'en'});
 const STORAGE_KEY = 'keyboardApp.settings.v1';
 const MAX_DIAGNOSTICS = 80;
 const MAX_IDEMPOTENCY = 200;
@@ -78,6 +86,8 @@ const idempotency = new Map();
 const localeCache = new Map();
 const layoutCache = new Map();
 const dom = {};
+// Language picker views keyed by setting name; values come from state.settings.
+const pickers = {};
 let requestCounter = 0;
 let graphemeSegmenter = null;
 let trackingService = null;
@@ -414,30 +424,27 @@ function cacheDom() {
   if (dom.settingsButton) dom.settingsButton.dataset.actionId = 'settings';
 }
 
+// Both pickers send the same settings.update command the product MCP uses.
 function buildOptions() {
-  if (dom.uiLocale) {
-    dom.uiLocale.replaceChildren();
-    for (const id of LOCALE_IDS) {
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = NATIVE_NAMES[id];
-      dom.uiLocale.appendChild(option);
-    }
-  }
-  if (dom.keyboardLayoutId) {
-    dom.keyboardLayoutId.replaceChildren();
-    for (const id of LOCALE_IDS) {
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = NATIVE_NAMES[id];
-      dom.keyboardLayoutId.appendChild(option);
-    }
+  const items = LOCALE_IDS.map(function (id) {
+    return {id:id, english:ENGLISH_NAMES[id], native:NATIVE_NAMES[id]};
+  }).sort(function (a, b) { return a.english.localeCompare(b.english, 'en'); });
+  for (const key of ['uiLocale', 'keyboardLayoutId']) {
+    const list = document.getElementById(key + 'List');
+    if (!dom[key] || !list) continue;
+    pickers[key] = createLanguagePicker({trigger:dom[key], list:list, items:items, onSelect:function (id) {
+      app.dispatch('settings.update', {[key]:id, requestId:makeRequestId()}).catch(handleUiError);
+    }});
   }
 }
 
 function renderSettingsValues() {
-  if (dom.uiLocale) dom.uiLocale.value = state.settings.uiLocale;
-  if (dom.keyboardLayoutId) dom.keyboardLayoutId.value = state.settings.keyboardLayoutId;
+  if (pickers.uiLocale) pickers.uiLocale.setValue(state.settings.uiLocale);
+  if (pickers.keyboardLayoutId) pickers.keyboardLayoutId.setValue(state.settings.keyboardLayoutId);
+}
+
+function closePickers() {
+  for (const picker of Object.values(pickers)) picker.close(false);
 }
 
 function renderText() {
@@ -548,8 +555,6 @@ function renderStaticText() {
   }
   if (dom.uiLanguageLabel) dom.uiLanguageLabel.textContent = t.uiLanguage;
   if (dom.keyboardLayoutLabel) dom.keyboardLayoutLabel.textContent = t.keyboardLayout;
-  if (dom.uiLocale) dom.uiLocale.setAttribute('aria-label', t.uiLanguage);
-  if (dom.keyboardLayoutId) dom.keyboardLayoutId.setAttribute('aria-label', t.keyboardLayout);
   if (dom.bridgeTitle) dom.bridgeTitle.textContent = t.bridgeTitle;
   if (dom.bridgeHelp) dom.bridgeHelp.textContent = t.bridgeHelp;
   if (dom.bridgeCodeLabel) dom.bridgeCodeLabel.textContent = t.bridgeCode;
@@ -1009,6 +1014,7 @@ function closeSettings() {
   invalidatePendingActivation();
   state.spaceOrigin = null;
   state.activeSurface = 'keyboard';
+  closePickers();
   if (dom.settingsDialog && dom.settingsDialog.open) {
     if (typeof dom.settingsDialog.close === 'function') {
       dom.settingsDialog.close();
@@ -1382,6 +1388,7 @@ function bindEvents() {
       app.dispatch('settings.close', {requestId:makeRequestId()}).catch(handleUiError);
     });
     dom.settingsDialog.addEventListener('close', function () {
+      closePickers();
       if (state.activeSurface === 'settings') {
         invalidatePendingActivation();
         state.spaceOrigin = null;
@@ -1404,19 +1411,12 @@ function bindEvents() {
     if (!element) return;
     const actionId = element.dataset.actionId;
     if (actionId === 'bridgeConnect' || actionId === 'bridgeDisconnect' || actionId === 'bridgeCode') return;
+    // Language pickers open their list themselves (language-picker.js).
+    if (actionId === 'uiLocale' || actionId === 'keyboardLayoutId') return;
     if (element.matches('select, input, textarea')) return;
     if (element.tagName !== 'BUTTON') return;
     event.preventDefault();
     handleUiAction(actionId);
-  });
-  document.addEventListener('change', function (event) {
-    const element = event.target;
-    if (!element || !element.id) return;
-    if (element.id === 'uiLocale') {
-      app.dispatch('settings.update', {uiLocale:element.value,requestId:makeRequestId()}).catch(handleUiError);
-    } else if (element.id === 'keyboardLayoutId') {
-      app.dispatch('settings.update', {keyboardLayoutId:element.value,requestId:makeRequestId()}).catch(handleUiError);
-    }
   });
   document.addEventListener('keydown', function (event) {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
